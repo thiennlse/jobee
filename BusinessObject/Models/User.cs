@@ -9,13 +9,12 @@ namespace BusinessObject.Models
     public partial class User
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public string UserId { get; set; }
+        public int UserId { get; set; }
 
         [Required]
         [EmailAddress(ErrorMessage ="Vui lòng nhập đúng email")]
         [StringLength(50)]
         public string Email { get; set; } = null!;
-
         [Required]
         public string? Role { get; set; }
         [Required]
@@ -24,7 +23,6 @@ namespace BusinessObject.Models
         public DateTime? CreatedAt { get; set; }
         [Required]
         [StringLength(40)]
-
         public string Username { get; set; } = null!;
         [JsonIgnore]
         public virtual ICollection<Application>? Applications { get; set; }

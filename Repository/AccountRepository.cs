@@ -11,9 +11,9 @@ namespace Repository
 {
     public class AccountRepository : IAccountRepository
     {
-        private readonly TestContext _context;
+        private readonly DBContext _context;
 
-        public AccountRepository(TestContext context)
+        public AccountRepository(DBContext context)
         {
             _context = context;
         }

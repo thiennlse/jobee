@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace BusinessObject.Migrations
 {
-    public partial class SetUserid : Migration
+    public partial class InitialCreated : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -13,11 +13,13 @@ namespace BusinessObject.Migrations
                 name: "InterviewQuestion",
                 columns: table => new
                 {
-                    QuestionId = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: false),
-                    Position = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: true),
-                    Title = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true),
-                    Answer = table.Column<string>(type: "text", nullable: true),
-                    CreateAt = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())")
+                    QuestionId = table.Column<int>(type: "int", unicode: false, maxLength: 255, nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Position = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: false),
+                    Experiences = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Title = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: false),
+                    Answer = table.Column<string>(type: "text", nullable: false),
+                    CreateAt = table.Column<DateTime>(type: "datetime", nullable: false, defaultValueSql: "(getdate())")
                 },
                 constraints: table =>
                 {
@@ -28,10 +30,11 @@ namespace BusinessObject.Migrations
                 name: "SubscriptionPlans",
                 columns: table => new
                 {
-                    PlanId = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: false),
-                    PlanName = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true),
-                    Price = table.Column<decimal>(type: "decimal(10,2)", nullable: true),
-                    Duration = table.Column<int>(type: "int", nullable: true)
+                    PlanId = table.Column<int>(type: "int", unicode: false, maxLength: 255, nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PlanName = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    Duration = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -42,7 +45,8 @@ namespace BusinessObject.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: false),
+                    UserId = table.Column<int>(type: "int", maxLength: 255, nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Email = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: false),
                     Role = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false),
                     PasswordHash = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: false),
@@ -58,12 +62,13 @@ namespace BusinessObject.Migrations
                 name: "Applications",
                 columns: table => new
                 {
-                    ApplicationId = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: false),
-                    JobId = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true),
-                    JobSeekerId = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true),
-                    Resume = table.Column<string>(type: "text", nullable: true),
-                    AppliedAt = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
-                    Status = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true)
+                    ApplicationId = table.Column<int>(type: "int", unicode: false, maxLength: 255, nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    JobId = table.Column<int>(type: "int", unicode: false, maxLength: 255, nullable: false),
+                    JobSeekerId = table.Column<int>(type: "int", unicode: false, maxLength: 255, nullable: false),
+                    Resume = table.Column<string>(type: "text", nullable: false),
+                    AppliedAt = table.Column<DateTime>(type: "datetime", nullable: false, defaultValueSql: "(getdate())"),
+                    Status = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -72,22 +77,24 @@ namespace BusinessObject.Migrations
                         name: "FK_Applications.JobSeekerId",
                         column: x => x.JobSeekerId,
                         principalTable: "Users",
-                        principalColumn: "UserId");
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Jobs",
                 columns: table => new
                 {
-                    JobId = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: false),
-                    EmployerId = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true),
+                    JobId = table.Column<int>(type: "int", unicode: false, maxLength: 255, nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    EmployerId = table.Column<int>(type: "int", unicode: false, maxLength: 255, nullable: false),
                     Title = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: true),
-                    Location = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true),
-                    CreateAt = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
-                    JobType = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
-                    SalaryRange = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
-                    Status = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true)
+                    Description = table.Column<string>(type: "text", nullable: false),
+                    Location = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: false),
+                    CreateAt = table.Column<DateTime>(type: "datetime", nullable: false, defaultValueSql: "(getdate())"),
+                    JobType = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false),
+                    SalaryRange = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false),
+                    Status = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -96,19 +103,21 @@ namespace BusinessObject.Migrations
                         name: "FK_Jobs_EmployerId",
                         column: x => x.EmployerId,
                         principalTable: "Users",
-                        principalColumn: "UserId");
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Payments",
                 columns: table => new
                 {
-                    PaymentId = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: false),
-                    UserId = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true),
-                    Amount = table.Column<decimal>(type: "decimal(10,2)", nullable: true),
-                    PaymentDate = table.Column<DateTime>(type: "datetime", nullable: true),
-                    PaymentMethod = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true),
-                    Status = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: true)
+                    PaymentId = table.Column<int>(type: "int", unicode: false, maxLength: 255, nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", unicode: false, maxLength: 255, nullable: false),
+                    Amount = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    PaymentDate = table.Column<DateTime>(type: "datetime", nullable: false),
+                    PaymentMethod = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false),
+                    Status = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -117,15 +126,17 @@ namespace BusinessObject.Migrations
                         name: "FK_Payments_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
-                        principalColumn: "UserId");
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Profiles",
                 columns: table => new
                 {
-                    ProfileId = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: false),
-                    UserId = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: false),
+                    ProfileId = table.Column<int>(type: "int", unicode: false, maxLength: 255, nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", unicode: false, maxLength: 255, nullable: false),
                     FullName = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: false),
                     PhoneNumber = table.Column<string>(type: "varchar(20)", unicode: false, maxLength: 20, nullable: false),
                     Description = table.Column<string>(type: "text", maxLength: 300, nullable: true),
@@ -149,11 +160,12 @@ namespace BusinessObject.Migrations
                 name: "UserSubscriptions",
                 columns: table => new
                 {
-                    UserSubscriptionId = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: false),
-                    UserId = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true),
-                    PlanId = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true),
-                    StartDate = table.Column<DateTime>(type: "datetime", nullable: true),
-                    EndDate = table.Column<DateTime>(type: "datetime", nullable: true)
+                    UserSubscriptionId = table.Column<int>(type: "int", unicode: false, maxLength: 255, nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", unicode: false, maxLength: 255, nullable: false),
+                    PlanId = table.Column<int>(type: "int", unicode: false, maxLength: 255, nullable: false),
+                    StartDate = table.Column<DateTime>(type: "datetime", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "datetime", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -162,12 +174,14 @@ namespace BusinessObject.Migrations
                         name: "FK_UserSubscriptions_PlanId",
                         column: x => x.PlanId,
                         principalTable: "SubscriptionPlans",
-                        principalColumn: "PlanId");
+                        principalColumn: "PlanId",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_UserSubscriptions_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
-                        principalColumn: "UserId");
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(

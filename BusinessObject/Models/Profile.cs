@@ -9,9 +9,9 @@ namespace BusinessObject.Models
     public partial class Profile
     {
         [Key,DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public string ProfileId { get; set; } = null!;
+        public int ProfileId { get; set; }
         [Required]
-        public string? UserId { get; set; }
+        public int? UserId { get; set; }
         [Required]
         [StringLength(30)]
         public string? FullName { get; set; }
