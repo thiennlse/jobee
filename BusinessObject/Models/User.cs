@@ -8,8 +8,8 @@ namespace BusinessObject.Models
 {
     public partial class User
     {
-        [Key]
-        public string UserId { get; set; } = null!;
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public string UserId { get; set; }
 
         [Required]
         [EmailAddress(ErrorMessage ="Vui lòng nhập đúng email")]
@@ -35,6 +35,6 @@ namespace BusinessObject.Models
         [JsonIgnore]
         public virtual ICollection<Profile>? Profiles { get; set; }
         [JsonIgnore]
-        public virtual ICollection<UserSubscription>? UserSubscriptions { get; set; }
+        public virtual ICollection<UserSubscription>? UserSubscriptions { get; set;}
     }
 }
