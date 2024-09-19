@@ -14,5 +14,7 @@ namespace Services
         Task<List<User>> GetUsers();
 
         Task SignIn(User user);
+
+        Task<User> GetUser(int id);
     }
 }

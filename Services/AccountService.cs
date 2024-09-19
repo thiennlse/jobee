@@ -17,19 +17,24 @@ namespace Services
             _repo = repo;
         }
 
-        Task<List<User>> IAccountService.GetUsers()
+        public async Task<User> GetUser(int id)
         {
-            return _repo.GetUsers();
+            return await _repo.GetUser(id);
         }
 
-        Task<User> IAccountService.Login(string email, string password)
+        async Task<List<User>> IAccountService.GetUsers()
         {
-            return _repo.Login(email, password);
+            return await _repo.GetUsers();
         }
 
-        Task IAccountService.SignIn(User user)
+        async Task<User> IAccountService.Login(string email, string password)
         {
-            return _repo.SignIn(user);
+            return await _repo.Login(email, password);
+        }
+
+        async Task IAccountService.SignIn(User user)
+        {
+            await _repo.SignIn(user);
         }
     }
 }

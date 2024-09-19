@@ -24,9 +24,24 @@ namespace Repository
             return await _dbContext.InterviewQuestions.ToListAsync();
         }
 
-        public async Task<InterviewQuestion> getQuestionByID(int id)
+        public async Task<List<InterviewQuestion>> getQuestionByID(int id)
         {
-            return await _dbContext.InterviewQuestions.SingleOrDefaultAsync(q => q.QuestionId.Equals(id));
+            _interviews = new List<InterviewQuestion>();
+            _interviews.Add(await _dbContext.InterviewQuestions.SingleOrDefaultAsync(q => q.QuestionId.Equals(id)));
+            return _interviews;
+        }
+
+        public async Task addQuestion(InterviewQuestion question)
+        {
+            _dbContext.InterviewQuestions.Add(question);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<InterviewQuestion> updateQuestion(InterviewQuestion interviewQuestion)
+        {
+            _dbContext.Entry(interviewQuestion).State = EntityState.Modified;
+            await _dbContext.SaveChangesAsync();
+            return interviewQuestion;
         }
     }
 }

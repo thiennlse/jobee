@@ -1,6 +1,8 @@
 ﻿using BusinessObject.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Storage;
 using Services;
+using System.Text.Json;
 
 namespace JobeeWepAppAPI.Controllers
 {
@@ -55,6 +57,23 @@ namespace JobeeWepAppAPI.Controllers
                 return Ok(user);
             }
             return BadRequest("Vui lòng nhập đầy đủ thông tin");
+        }
+
+        [HttpGet("user")]
+        public async Task<IActionResult> FindUserById(int id)
+        {
+            if (id <= 0)
+            {
+                return BadRequest("Vui lòng nhập id người dùng hợp lệ");
+            }
+
+            var user = await _accountService.GetUser(id);
+            if (user == null)
+            {
+                return NotFound("Người dùng không tồn tại");
+            }
+
+            return Ok(user);
         }
     }
 }

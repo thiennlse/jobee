@@ -30,6 +30,11 @@ namespace Repository
             return await _context.Users.ToListAsync();
         }
 
+        public async Task<User> GetUser(int id)
+        {
+            return await _context.Users.Include(_u => _u.Profiles).SingleOrDefaultAsync(_u => _u.UserId.Equals(id));
+        }
+
         public async Task SignIn(User user)
         {
             _context.Users.Add(user);
