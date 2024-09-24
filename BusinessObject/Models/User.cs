@@ -8,31 +8,30 @@ namespace BusinessObject.Models
 {
     public partial class User
     {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Key,DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int UserId { get; set; }
-
         [Required]
-        [EmailAddress(ErrorMessage ="Vui lòng nhập đúng email")]
-        [StringLength(50)]
         public string Email { get; set; } = null!;
         [Required]
-        public string? Role { get; set; }
+        public string Role { get; set; } = null!;
         [Required]
         public string PasswordHash { get; set; } = null!;
         [Required]
-        public DateTime? CreatedAt { get; set; }
-        [Required]
-        [StringLength(40)]
-        public string Username { get; set; } = null!;
+        public DateTime CreatedAt { get; set; }
+        public string? Address { get; set; }
+        public int? Age { get; set; }
+        public string? Description { get; set; }
+        public string FullName { get; set; } = null!;
+        public string JobTitle { get; set; } = null!;
+        public string? PhoneNumber { get; set; }
+        public string? ProfilePicture { get; set; }
         [JsonIgnore]
-        public virtual ICollection<Application>? Applications { get; set; }
+        public virtual ICollection<Application> Applications { get; set; }
         [JsonIgnore]
-        public virtual ICollection<Job>? Jobs { get; set; }
+        public virtual ICollection<Job> Jobs { get; set; }
         [JsonIgnore]
-        public virtual ICollection<Payment>? Payments { get; set; }
+        public virtual ICollection<Payment> Payments { get; set; }
         [JsonIgnore]
-        public virtual ICollection<Profile>? Profiles { get; set; }
-        [JsonIgnore]
-        public virtual ICollection<UserSubscription>? UserSubscriptions { get; set;}
+        public virtual ICollection<UserSubscription> UserSubscriptions { get; set; }
     }
 }

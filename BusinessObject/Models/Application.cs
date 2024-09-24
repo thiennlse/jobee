@@ -8,18 +8,19 @@ namespace BusinessObject.Models
 {
     public partial class Application
     {
-        [Key,DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ApplicationId { get; set; }
-        [Required]
+        
+        public int JobId { get; set; }
+
         public int JobSeekerId { get; set; }
         [Required]
-        public int? JobId { get; set; }
+        public string Resume { get; set; } = null!;
         [Required]
-        public string? Resume { get; set; }
+        public DateTime AppliedAt { get; set; }
         [Required]
-        public DateTime? AppliedAt { get; set; }
-        [Required]
-        public string? Status { get; set; }
-        public virtual User? JobSeeker { get; set; }
+        public string Status { get; set; } = null!;
+        [JsonIgnore]
+        public virtual User JobSeeker { get; set; } = null!;
     }
 }

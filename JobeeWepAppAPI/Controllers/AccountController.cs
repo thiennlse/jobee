@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Storage;
 using Services;
 using System.Text.Json;
+using BusinessObject.RequestModel;
+using Services.UnitOfWork;
 
 namespace JobeeWepAppAPI.Controllers
 {
@@ -10,11 +12,11 @@ namespace JobeeWepAppAPI.Controllers
     [Route("api/Account")]
     public class AccountController : Controller
     {
-        private readonly IAccountService _accountService;
+        private readonly UnitOfWork _unitOfWork;
 
-        public AccountController(IAccountService accountService)
+        public AccountController(UnitOfWork unitOfWork)
         {
-            _accountService = accountService;
+            _unitOfWork = unitOfWork;
         }
 
         [HttpPost("login")]
@@ -25,7 +27,7 @@ namespace JobeeWepAppAPI.Controllers
                 return BadRequest("Email và mật khẩu không được để trống");
             }
 
-            var result = await _accountService.Login(email, password);
+            var result = await _unitOfWork.AccountRepo.Login(email, password);
             if (result != null)
             {
                 return Ok("Đăng nhập thành công");
@@ -39,7 +41,7 @@ namespace JobeeWepAppAPI.Controllers
         [HttpGet("users")]
         public async Task<IActionResult> GetUsers()
         {
-            var user = await _accountService.GetUsers();
+            var user = await _unitOfWork.AccountRepo.getAll();
 
             if(user == null)
             {
@@ -49,12 +51,16 @@ namespace JobeeWepAppAPI.Controllers
         }
 
         [HttpPost("signin")]
-        public async Task<IActionResult> SignIn([FromBody] User user)
+        public async Task<IActionResult> SignIn([FromBody] RegisterAccountModel user)
         {
             if (user != null)
             {
-                _accountService.SignIn(user);
-                return Ok(user);
+                User _user = new User();
+                _user.Email = user.Email;
+                _user.PasswordHash = user.PasswordHash;
+                _user.Role = "JobSeeker";
+                _unitOfWork.AccountRepo.add(_user);
+                return Created("Da tao thanh cong", _user);
             }
             return BadRequest("Vui lòng nhập đầy đủ thông tin");
         }
@@ -67,7 +73,7 @@ namespace JobeeWepAppAPI.Controllers
                 return BadRequest("Vui lòng nhập id người dùng hợp lệ");
             }
 
-            var user = await _accountService.GetUser(id);
+            var user = await _unitOfWork.AccountRepo.getById(id);
             if (user == null)
             {
                 return NotFound("Người dùng không tồn tại");

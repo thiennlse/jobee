@@ -14,13 +14,13 @@ namespace BusinessObject.RequestModel
 
         public int ApplicationId { get; set; }
         [Required]
-        public int? JobId { get; set; }
+        public int JobId { get; set; }
         [Required]
         public int JobSeekerId { get; set; }
         [Required]
         public string? Resume { get; set; }
         [Required]
-        public DateTime? AppliedAt { get; set; }
+        public DateTime AppliedAt { get; set; }
         [Required]
         public string? Status { get; set; }
     }

@@ -9,36 +9,45 @@ using System.Threading.Tasks;
 
 namespace Repository
 {
-    public class AccountRepository : IAccountRepository
+    public class AccountRepository : BaseRepository<User>, IAccountRepository
     {
         private readonly DBContext _context;
+        private readonly BaseRepository<User> _baseRepository;
 
-        public AccountRepository(DBContext context)
+        public AccountRepository(DBContext dbContext) : base(dbContext)
         {
-            _context = context;
+            _context = dbContext;
+            _baseRepository = new BaseRepository<User>(dbContext);
+        }
+
+        public async Task add(User user)
+        {
+            await _baseRepository.add(user);
+        }
+
+        public async Task deleteById(int id)
+        {
+            await _baseRepository.deleteById(id);
+        }
+
+        public async Task<List<User>> getAll()
+        {
+            return await _baseRepository.getAll();
+        }
+
+        public async Task<User> getById(int id)
+        {
+            return await _baseRepository.getById(id); 
         }
 
         public async Task<User> Login(string email, string password)
         {
-            return await _context.Users.Include(u => u.Profiles)
-                .Where(u => u.Email.Equals(email) && u.PasswordHash.Equals(password))
-                .FirstOrDefaultAsync();
+            return await _context.Users.FirstOrDefaultAsync(u => u.Email.Equals(email) && u.PasswordHash.Equals(password));
         }
 
-        public async Task<List<User>> GetUsers()
+        public async Task<User> update(User entity)
         {
-            return await _context.Users.ToListAsync();
-        }
-
-        public async Task<User> GetUser(int id)
-        {
-            return await _context.Users.Include(_u => _u.Profiles).SingleOrDefaultAsync(_u => _u.UserId.Equals(id));
-        }
-
-        public async Task SignIn(User user)
-        {
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();  
+            return await _baseRepository.update(entity);
         }
     }
 }

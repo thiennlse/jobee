@@ -9,46 +9,40 @@ using System.Threading.Tasks;
 
 namespace Repository
 {
-    public class ApplicationRepository :IApplicationRepository
+    public class ApplicationRepository : BaseRepository<Application>, IApplicationRepository
     {
         private readonly DBContext _dbContext;
+        private readonly BaseRepository<Application> _baseRepository;
 
-        public ApplicationRepository(DBContext dbContext)
+        public ApplicationRepository(DBContext dbContext) : base(dbContext)
         {
             _dbContext = dbContext;
+            _baseRepository = new BaseRepository<Application>(dbContext);
         }
 
-        List<Application> _applications;
-
-        public async Task<List<Application>> GetApplications()
+        public async Task add(Application entity)
         {
-            return await _dbContext.Applications.Include(a => a.JobSeeker).ToListAsync();
+            await _baseRepository.add(entity);
         }
 
-        public async Task<Application> GetApplicationById( int id)
+        public async Task deleteById(int id)
         {
-            return await _dbContext.Applications.Include(a => a.JobSeeker)
-                .SingleOrDefaultAsync(a => a.ApplicationId.Equals(id));
+            await _baseRepository.deleteById(id);
         }
 
-        public async Task addApplication(Application application)
+        public async Task<List<Application>> getAll()
         {
-            _dbContext.Applications.Add(application);
-            await _dbContext.SaveChangesAsync();
+            return await _baseRepository.getAll();
         }
 
-        public async Task deleteApplication(int id)
+        public async Task<Application> getById(int id)
         {
-            var application = await GetApplicationById(id);
-            _dbContext.Applications.Remove(application);
-            await _dbContext.SaveChangesAsync();
+            return await _baseRepository.getById(id);
         }
 
-        public async Task<Application> UpdateApplication(Application application)
+        public async Task<Application> update(Application entity)
         {
-            _dbContext.Entry(application).State = EntityState.Modified;
-            await _dbContext.SaveChangesAsync();
-            return application;
+            return await _baseRepository.update(entity);
         }
     }
 }

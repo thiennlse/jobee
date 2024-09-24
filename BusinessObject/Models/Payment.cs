@@ -11,16 +11,16 @@ namespace BusinessObject.Models
         [Key,DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int PaymentId { get; set; }
         [Required]
-        public int? UserId { get; set; }
+        public int UserId { get; set; }
         [Required]
-        public decimal? Amount { get; set; }
+        public decimal Amount { get; set; }
         [Required]
-        public DateTime? PaymentDate { get; set; }
+        public DateTime PaymentDate { get; set; }
         [Required]
-        public string? PaymentMethod { get; set; }
+        public string PaymentMethod { get; set; } = null!;
         [Required]
-        public string? Status { get; set; }
+        public string Status { get; set; } = null!;
         [JsonIgnore]
-        public virtual User? User { get; set; }
+        public virtual User User { get; set; } = null!;
     }
 }

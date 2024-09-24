@@ -1,5 +1,6 @@
 ﻿using BusinessObject.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,40 +9,39 @@ using System.Threading.Tasks;
 
 namespace Repository
 {
-    public class QuestionRepository : IQuestionRepository
+    public class QuestionRepository : BaseRepository<InterviewQuestion>, IQuestionRepository
     {
-        private DBContext _dbContext;
-
-        public QuestionRepository(DBContext dbContext)
+        private readonly DBContext _dbContext;
+        private readonly BaseRepository<InterviewQuestion> _interviewQuestionRepository;
+        public QuestionRepository(DBContext dbContext) : base(dbContext)
         {
             _dbContext = dbContext;
+            _interviewQuestionRepository = new BaseRepository<InterviewQuestion>(dbContext);
         }
 
-        List<InterviewQuestion> _interviews;
-
-        public async Task<List<InterviewQuestion>> getAllQuestion()
+        public async Task add(InterviewQuestion entity)
         {
-            return await _dbContext.InterviewQuestions.ToListAsync();
+            await _interviewQuestionRepository.add(entity);
         }
 
-        public async Task<List<InterviewQuestion>> getQuestionByID(int id)
+        public async Task deleteById(int id)
         {
-            _interviews = new List<InterviewQuestion>();
-            _interviews.Add(await _dbContext.InterviewQuestions.SingleOrDefaultAsync(q => q.QuestionId.Equals(id)));
-            return _interviews;
+            await _interviewQuestionRepository.deleteById(id);
         }
 
-        public async Task addQuestion(InterviewQuestion question)
+        public async Task<List<InterviewQuestion>> getAll()
         {
-            _dbContext.InterviewQuestions.Add(question);
-            await _dbContext.SaveChangesAsync();
+            return await _interviewQuestionRepository.getAll();
         }
 
-        public async Task<InterviewQuestion> updateQuestion(InterviewQuestion interviewQuestion)
+        public async Task<InterviewQuestion> getById(int id)
         {
-            _dbContext.Entry(interviewQuestion).State = EntityState.Modified;
-            await _dbContext.SaveChangesAsync();
-            return interviewQuestion;
+            return await _interviewQuestionRepository.getById(id);
+        }
+
+        public async Task<InterviewQuestion> update(InterviewQuestion entity)
+        {
+            return await _interviewQuestionRepository.update(entity);
         }
     }
 }

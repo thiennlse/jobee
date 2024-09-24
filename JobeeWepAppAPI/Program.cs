@@ -2,6 +2,7 @@ using BusinessObject.Models;
 using Microsoft.EntityFrameworkCore;
 using Repository;
 using Services;
+using Services.UnitOfWork;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,14 +14,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<DBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
-builder.Services.AddScoped<IQuestionServices, QuestionServices>();
-builder.Services.AddScoped<IApplicationService, ApplicationService>();
 builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
-builder.Services.AddScoped<IJobService, JobService>();
 builder.Services.AddScoped<IJobRepository, JobRepository>();
+builder.Services.AddScoped<UnitOfWork>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

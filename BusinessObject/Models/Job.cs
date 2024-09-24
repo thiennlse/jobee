@@ -8,25 +8,24 @@ namespace BusinessObject.Models
 {
     public partial class Job
     {
-        [Key ,DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Key,DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int JobId { get; set; }
+
+        public int EmployerId { get; set; }
         [Required]
-        public int? EmployerId { get; set; }
+        public string Title { get; set; } = null!;
+        public string Description { get; set; } = null!;
         [Required]
-        public string Title { get; set; }
+        public string Location { get; set; } = null!;
         [Required]
-        public string? Description { get; set; }
+        public DateTime CreateAt { get; set; }
         [Required]
-        public string? Location { get; set; }
+        public string JobType { get; set; } = null!;
         [Required]
-        public DateTime? CreateAt { get; set; }
+        public string SalaryRange { get; set; } = null!;
         [Required]
-        public string? JobType { get; set; }
-        [Required]
-        public string? SalaryRange { get; set; }
-        [Required]
-        public string? Status { get; set; }
+        public string Status { get; set; } = null!;
         [JsonIgnore]
-        public virtual User? Employer { get; set; }
+        public virtual User Employer { get; set; } = null!;
     }
 }

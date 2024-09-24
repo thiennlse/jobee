@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Repository
+namespace BusinessObject.RequestModel
 {
-    public interface IJobSeekerReposity
+    public class JobRequest
     {
+
     }
 }

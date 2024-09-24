@@ -9,45 +9,41 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace Repository
 {
-    public class JobRepository : IJobRepository
+    public class JobRepository : BaseRepository<Job>, IJobRepository
     {
         private readonly DBContext _dbContext;
+        private readonly BaseRepository<Job> _baseRepository;
 
-        public JobRepository(DBContext dbContext)
+        public JobRepository(DBContext dbContext) : base(dbContext)
         {
             _dbContext = dbContext;
+            _baseRepository = new BaseRepository<Job>(dbContext);
         }
 
-        List<Job> _jobs;    
 
-        public async Task<List<Job>> GetAllJob()
+        public async Task add(Job entity)
         {
-            return _dbContext.Jobs.ToList();
+            await _baseRepository.add(entity);
         }
 
-        public async Task<Job> GetJobById(int id)
+        public async Task deleteById(int id)
         {
-            return await _dbContext.Jobs.SingleOrDefaultAsync(x => x.JobId.Equals(id));
+            await _baseRepository.deleteById(id);
         }
 
-        public async Task addJob(Job job)
+        public async Task<List<Job>> getAll()
         {
-            _dbContext.Jobs.Add(job);
-            await _dbContext.SaveChangesAsync();
+            return await _baseRepository.getAll();
         }
 
-        public async Task<Job> updateJob(Job job)
+        public async Task<Job> getById(int id)
         {
-            _dbContext.Entry(job).State = EntityState.Modified;
-            await _dbContext.SaveChangesAsync();
-            return job;
+            return await _baseRepository.getById(id);
         }
 
-        public async Task deleteJob(int id) 
+        public async Task<Job> update(Job entity)
         {
-            Job job =await GetJobById(id);
-            _dbContext.Remove(job);
-            await _dbContext.SaveChangesAsync();
+            return await _baseRepository.update(entity);
         }
     }
 }

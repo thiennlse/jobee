@@ -3,6 +3,7 @@ using BusinessObject.RequestModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services;
+using Services.UnitOfWork;
 
 namespace JobeeWepAppAPI.Controllers
 {
@@ -10,19 +11,17 @@ namespace JobeeWepAppAPI.Controllers
     [ApiController]
     public class ApplicationController : ControllerBase
     {
-        private readonly IApplicationService _applicationService;
-        private readonly IAccountService _accountService;
+        private readonly UnitOfWork _unitOfWork;
 
-        public ApplicationController(IApplicationService applicationService, IAccountService accountService)
+        public ApplicationController(UnitOfWork unitOfWork )
         {
-            _applicationService = applicationService;
-            _accountService = accountService;
+            _unitOfWork = unitOfWork;
         }
 
         [HttpGet("applications")]
         public async Task<IActionResult> GetApplication()
         {
-            var applications = await _applicationService.GetApplications();
+            var applications = await _unitOfWork.ApplicationRepo.getAll();
 
             if(applications == null)
             {
@@ -38,7 +37,7 @@ namespace JobeeWepAppAPI.Controllers
             {
                 return BadRequest("Vui lòng nhập id");
             }
-            var application = await _applicationService.GetApplicationById(id);
+            var application = await _unitOfWork.ApplicationRepo.getById(id);
 
             if(application == null)
             {
@@ -53,11 +52,11 @@ namespace JobeeWepAppAPI.Controllers
             _application.AppliedAt = application.AppliedAt;
             _application.ApplicationId = application.ApplicationId;
             _application.Status = application.Status;
-            _application.JobSeeker = await _accountService.GetUser(application.JobSeekerId);
+            _application.JobSeeker = await _unitOfWork.AccountRepo.getById(application.JobSeekerId);
             _application.Resume = application.Resume;
             _application.JobId = application.JobId;
 
-            if ( await _accountService.GetUser(application.JobSeekerId) == _application.JobSeeker)
+            if ( await _unitOfWork.AccountRepo.getById(application.JobSeekerId) == _application.JobSeeker)
             {
                 return NotFound($"Không tìm thấy {application.JobSeekerId}");
             }
@@ -65,13 +64,13 @@ namespace JobeeWepAppAPI.Controllers
             {
                 return BadRequest("Vui lòng nhập đầy đủ thông tin");
             }
-            await _applicationService.addApplication(_application);
+            await _unitOfWork.ApplicationRepo.add(_application);
             return Ok(_application);
         }
-        [HttpPut("update")]
+        [HttpPatch("update")]
         public async Task<IActionResult> updateApplication([FromBody] Application app)
         {
-            var _application = await _applicationService.GetApplicationById(app.ApplicationId);
+            var _application = await _unitOfWork.ApplicationRepo.getById(app.ApplicationId);
             if (app == null)
             {
                 return BadRequest("Vui lòng nhập đầy đủ thông tin");
@@ -79,7 +78,7 @@ namespace JobeeWepAppAPI.Controllers
 
             if(_application != null)
             {
-                await _applicationService.UpdateApplication(app);
+                await _unitOfWork.ApplicationRepo.update(_application);
                 return Ok(app);
             }
             return NotFound($"Không tìm thấy Application{app.ApplicationId}");
@@ -91,14 +90,14 @@ namespace JobeeWepAppAPI.Controllers
             {
                 return BadRequest("Vui lòng nhập id");
             }
-            var _application = await _applicationService.GetApplicationById(id);
+            var _application = await _unitOfWork.ApplicationRepo.getById(id);
 
             if(_application == null)
             {
                 return NotFound($"Không tìm thấy Application {id}");
             }
             
-            await _applicationService.deleteApplication(id);
+            await _unitOfWork.ApplicationRepo.deleteById(id);
             return Ok($"Đã xóa bản ghi {id}");
         }
         

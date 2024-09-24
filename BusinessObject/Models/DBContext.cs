@@ -20,7 +20,6 @@ namespace BusinessObject.Models
         public virtual DbSet<InterviewQuestion> InterviewQuestions { get; set; } = null!;
         public virtual DbSet<Job> Jobs { get; set; } = null!;
         public virtual DbSet<Payment> Payments { get; set; } = null!;
-        public virtual DbSet<Profile> Profiles { get; set; } = null!;
         public virtual DbSet<SubscriptionPlan> SubscriptionPlans { get; set; } = null!;
         public virtual DbSet<User> Users { get; set; } = null!;
         public virtual DbSet<UserSubscription> UserSubscriptions { get; set; } = null!;
@@ -162,43 +161,6 @@ namespace BusinessObject.Models
                     .HasConstraintName("FK_Payments_UserId");
             });
 
-            modelBuilder.Entity<Profile>(entity =>
-            {
-                entity.Property(e => e.ProfileId)
-                    .HasMaxLength(255)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.Address)
-                    .HasMaxLength(255)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.Description).HasColumnType("text");
-
-                entity.Property(e => e.FullName)
-                    .HasMaxLength(255)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.JobTitle)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.PhoneNumber)
-                    .HasMaxLength(20)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.ProfilePicture)
-                    .HasMaxLength(255)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserId)
-                    .HasMaxLength(255)
-                    .IsUnicode(false);
-
-                entity.HasOne(d => d.User)
-                    .WithMany(p => p.Profiles)
-                    .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("FK_Profiles_UserId");
-            });
 
             modelBuilder.Entity<SubscriptionPlan>(entity =>
             {
@@ -241,9 +203,26 @@ namespace BusinessObject.Models
                 entity.Property(e => e.Role)
                     .HasMaxLength(50)
                     .IsUnicode(false);
+                entity.Property(e => e.Address)
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
 
-                entity.Property(e => e.Username)
+                entity.Property(e => e.Description).HasColumnType("text");
+
+                entity.Property(e => e.FullName)
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.JobTitle)
                     .HasMaxLength(100)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.PhoneNumber)
+                    .HasMaxLength(20)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ProfilePicture)
+                    .HasMaxLength(255)
                     .IsUnicode(false);
             });
 

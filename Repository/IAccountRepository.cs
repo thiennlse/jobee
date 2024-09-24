@@ -7,15 +7,9 @@ using System.Threading.Tasks;
 
 namespace Repository
 {
-    public interface IAccountRepository
+    public interface IAccountRepository : IBaseRepository<User>
     {
-        Task<User> Login(string email, string password);
-
-        Task<List<User>> GetUsers();
-
-        Task SignIn(User user);
-
-        Task<User> GetUser(int id);
+        Task<User> Login(string username, string password);
     }
 
 }

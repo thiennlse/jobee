@@ -10,14 +10,14 @@ namespace BusinessObject.Models
         [Key,DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int QuestionId { get; set; }
         [Required]
-        public string? Position { get; set; }
+        public string Position { get; set; } = null!;
         [Required]
-        public string Experiences {  get; set; }
+        public string Experiences { get; set; } = null!;
         [Required]
-        public string? Title { get; set; }
+        public string Title { get; set; } = null!;
         [Required]
-        public string? Answer { get; set; }
+        public string Answer { get; set; } = null!;
         [Required]
-        public DateTime? CreateAt { get; set; }
+        public DateTime CreateAt { get; set; }
     }
 }

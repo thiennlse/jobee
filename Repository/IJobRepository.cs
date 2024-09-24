@@ -7,12 +7,8 @@ using System.Threading.Tasks;
 
 namespace Repository
 {
-    public interface IJobRepository
+    public interface IJobRepository : IBaseRepository<Job>
     {
-        Task<List<Job>> GetAllJob();
-        Task<Job> GetJobById(int id);
-        Task addJob(Job job);
-        Task<Job> updateJob(Job job);
-        Task deleteJob(int id);
+        
     }
 }

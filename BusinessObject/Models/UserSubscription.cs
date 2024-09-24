@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
 namespace BusinessObject.Models
@@ -12,16 +11,16 @@ namespace BusinessObject.Models
         [Key,DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int UserSubscriptionId { get; set; }
         [Required]
-        public int? UserId { get; set; }
+        public int UserId { get; set; }
         [Required]
-        public int? PlanId { get; set; }
+        public int PlanId { get; set; }
         [Required]
-        public DateTime? StartDate { get; set; }
+        public DateTime StartDate { get; set; }
         [Required]
-        public DateTime? EndDate { get; set; }
+        public DateTime EndDate { get; set; }
         [JsonIgnore]
-        public virtual SubscriptionPlan? Plan { get; set; }
+        public virtual SubscriptionPlan Plan { get; set; } = null!;
         [JsonIgnore]
-        public virtual User? User { get; set; }
+        public virtual User User { get; set; } = null!;
     }
 }
