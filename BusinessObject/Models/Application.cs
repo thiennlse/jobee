@@ -11,6 +11,8 @@ namespace BusinessObject.Models
         [Key,DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ApplicationId { get; set; }
         [Required]
+        public int JobSeekerId { get; set; }
+        [Required]
         public int? JobId { get; set; }
         [Required]
         public string? Resume { get; set; }
