@@ -14,10 +14,36 @@ namespace Services.UnitOfWork
         private ApplicationRepository _applicationRepository;
         private QuestionRepository _questionRepository;
         private JobRepository _jobRepository;
+        private SubcriptionPlanRepository _subcriptionPlanRepository;
+        private PaymentRepository _paymentRepository;
         private DBContext _dbContext;
         public UnitOfWork(DBContext dbContext)
         {
             _dbContext = dbContext;
+        }
+
+        public PaymentRepository PaymentRepository
+        {
+            get
+            {
+                if( _paymentRepository == null )
+                {
+                    _paymentRepository = new PaymentRepository(_dbContext);
+                }
+                return _paymentRepository;
+            }
+        }
+
+        public SubcriptionPlanRepository SubcriptionPlanRepository
+        {
+            get
+            {
+                if( _subcriptionPlanRepository == null)
+                {
+                    _subcriptionPlanRepository = new SubcriptionPlanRepository(_dbContext);
+                }
+                return _subcriptionPlanRepository;
+            }
         }
 
         public AccountRepository AccountRepo
