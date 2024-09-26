@@ -7,7 +7,6 @@ namespace JobeeWepAppAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-
     public class PaymentController : ControllerBase
     {
         private readonly UnitOfWork _unitOfWork;
@@ -17,39 +16,74 @@ namespace JobeeWepAppAPI.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        [HttpGet]
+        [HttpGet("payments")]
         public async Task<IActionResult> GetAllPayment()
         {
-            List<Payment> payments = await _unitOfWork.PaymentRepository.getAll();
+            var payments = await _unitOfWork.PaymentRepository.getAll();
+            if (payments == null || !payments.Any())
+            {
+                return NotFound("Không tìm thấy bản ghi nào của Payment");
+            }
             return Ok(payments);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("payment/{id}")]
         public async Task<IActionResult> GetPaymentById(int id)
         {
-            Payment payment = await _unitOfWork.PaymentRepository.getById(id);
+            if (id == 0)
+            {
+                return BadRequest("Vui lòng nhập id");
+            }
+
+            var payment = await _unitOfWork.PaymentRepository.getById(id);
+            if (payment == null)
+            {
+                return NotFound($"Không tìm thấy Payment với ID {id}");
+            }
             return Ok(payment);
         }
 
-        [HttpPost]
+        [HttpPost("create")]
         public async Task<IActionResult> AddPayment([FromBody] Payment payment)
         {
-            await _unitOfWork.PaymentRepository.add(payment);
-            return Created("Payment created", payment);
-        }
+            if (payment == null)
+            {
+                return BadRequest("Vui lòng nhập đầy đủ thông tin");
+            }
 
-        [HttpPatch]
-        public async Task<IActionResult> UpdatePayment([FromBody] Payment payment)
-        {
-            await _unitOfWork.PaymentRepository.update(payment);
+            await _unitOfWork.PaymentRepository.add(payment);
             return Ok(payment);
         }
 
-        [HttpDelete]
+        [HttpPatch("update")]
+        public async Task<IActionResult> UpdatePayment([FromBody] Payment payment)
+        {
+            var existingPayment = await _unitOfWork.PaymentRepository.getById(payment.PaymentId);
+            if (existingPayment == null)
+            {
+                return NotFound($"Không tìm thấy Payment với ID {payment.PaymentId}");
+            }
+
+            await _unitOfWork.PaymentRepository.update(existingPayment);
+            return Ok(payment);
+        }
+
+        [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeletePayment(int id)
         {
+            if (id == 0)
+            {
+                return BadRequest("Vui lòng nhập id");
+            }
+
+            var payment = await _unitOfWork.PaymentRepository.getById(id);
+            if (payment == null)
+            {
+                return NotFound($"Không tìm thấy Payment với ID {id}");
+            }
+
             await _unitOfWork.PaymentRepository.deleteById(id);
-            return NoContent();
+            return Ok($"Đã xóa Payment với ID {id}");
         }
     }
 }
