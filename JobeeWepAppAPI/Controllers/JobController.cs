@@ -1,7 +1,6 @@
 ﻿using BusinessObject.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Services;
 using Services.UnitOfWork;
 
 namespace JobeeWepAppAPI.Controllers
@@ -17,34 +16,59 @@ namespace JobeeWepAppAPI.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        [HttpGet]
+        [HttpGet("jobs")]
         public async Task<IActionResult> GetAllJob()
         {
-            var jobs = await _unitOfWork.JobRepo.getAll(); 
-
+            var jobs = await _unitOfWork.JobRepo.getAll();
+            if (jobs == null || !jobs.Any())
+            {
+                return NotFound("Không tìm thấy bản ghi nào của Job");
+            }
             return Ok(jobs);
         }
 
-        [HttpGet("/{id}")]
+        [HttpGet("job/{id}")]
         public async Task<IActionResult> GetJobById(int id)
         {
+            if (id == 0)
+            {
+                return BadRequest("Vui lòng nhập id");
+            }
+
             var job = await _unitOfWork.JobRepo.getById(id);
+            if (job == null)
+            {
+                return NotFound($"Không tìm thấy Job với ID {id}");
+            }
             return Ok(job);
         }
 
-        [HttpPost]
+        [HttpPost("create")]
         public async Task<IActionResult> AddJob([FromBody] Job job)
         {
+            if (job == null)
+            {
+                return BadRequest("Vui lòng nhập đầy đủ thông tin");
+            }
+
             await _unitOfWork.JobRepo.add(job);
             return Ok(job);
         }
-        [HttpPatch]
+
+        [HttpPatch("update")]
         public async Task<IActionResult> UpdateJob([FromBody] Job job)
         {
-            await _unitOfWork.JobRepo.update(job);
+            var existingJob = await _unitOfWork.JobRepo.getById(job.JobId);
+            if (existingJob == null)
+            {
+                return NotFound($"Không tìm thấy Job với ID {job.JobId}");
+            }
+
+            await _unitOfWork.JobRepo.update(existingJob);
             return Ok(job);
         }
-        [HttpDelete]
+
+        [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteJob(int id)
         {
             if (id == 0)
@@ -59,8 +83,7 @@ namespace JobeeWepAppAPI.Controllers
             }
 
             await _unitOfWork.JobRepo.deleteById(id);
-            return NoContent();
+            return Ok($"Đã xóa Job với ID {id}");
         }
-
     }
 }

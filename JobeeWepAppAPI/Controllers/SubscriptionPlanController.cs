@@ -16,34 +16,59 @@ namespace JobeeWepAppAPI.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        [HttpGet]
+        [HttpGet("plans")]
         public async Task<IActionResult> GetAllPlan()
         {
-            List<SubscriptionPlan> plans = await _unitOfWork.SubcriptionPlanRepository.getAll();
+            var plans = await _unitOfWork.SubcriptionPlanRepository.getAll();
+            if (plans == null || !plans.Any())
+            {
+                return NotFound("Không tìm thấy bản ghi nào của Subscription Plan");
+            }
             return Ok(plans);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("plan/{id}")]
         public async Task<IActionResult> GetPlanById(int id)
         {
-            SubscriptionPlan plan = await _unitOfWork.SubcriptionPlanRepository.getById(id);
+            if (id == 0)
+            {
+                return BadRequest("Vui lòng nhập id");
+            }
+
+            var plan = await _unitOfWork.SubcriptionPlanRepository.getById(id);
+            if (plan == null)
+            {
+                return NotFound($"Không tìm thấy Subscription Plan với ID {id}");
+            }
             return Ok(plan);
         }
 
-        [HttpPost]
+        [HttpPost("create")]
         public async Task<IActionResult> AddPlan([FromBody] SubscriptionPlan plan)
         {
+            if (plan == null)
+            {
+                return BadRequest("Vui lòng nhập đầy đủ thông tin");
+            }
+
             await _unitOfWork.SubcriptionPlanRepository.add(plan);
-            return Created("Created successfully", plan);
-        }
-        [HttpPatch]
-        public async Task<IActionResult> UpdatePlan([FromBody] SubscriptionPlan plan)
-        {
-            await _unitOfWork.SubcriptionPlanRepository.update(plan);
-            return Ok(plan);    
+            return Ok(plan);
         }
 
-        [HttpDelete]
+        [HttpPatch("update")]
+        public async Task<IActionResult> UpdatePlan([FromBody] SubscriptionPlan plan)
+        {
+            var existingPlan = await _unitOfWork.SubcriptionPlanRepository.getById(plan.PlanId);
+            if (existingPlan == null)
+            {
+                return NotFound($"Không tìm thấy Subscription Plan với ID {plan.PlanId}");
+            }
+
+            await _unitOfWork.SubcriptionPlanRepository.update(existingPlan);
+            return Ok(plan);
+        }
+
+        [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeletePlan(int id)
         {
             if (id == 0)
@@ -58,7 +83,7 @@ namespace JobeeWepAppAPI.Controllers
             }
 
             await _unitOfWork.SubcriptionPlanRepository.deleteById(id);
-            return NoContent();
+            return Ok($"Đã xóa Subscription Plan với ID {id}");
         }
     }
 }
