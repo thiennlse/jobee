@@ -5,6 +5,7 @@ using Services;
 using System.Text.Json;
 using BusinessObject.RequestModel;
 using Services.UnitOfWork;
+using BusinessObject.ResponseModel;
 
 namespace JobeeWepAppAPI.Controllers
 {
@@ -20,14 +21,13 @@ namespace JobeeWepAppAPI.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login(string email, string password)
+        public async Task<IActionResult> Login([FromBody] RegisterAccountModel model)
         {
-            if (email == null || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
+            if (model == null || string.IsNullOrEmpty(model.Email) || string.IsNullOrEmpty(model.PasswordHash))
             {
                 return BadRequest("Email và mật khẩu không được để trống");
             }
-
-            var result = await _unitOfWork.AccountRepo.Login(email, password);
+            var result = await _unitOfWork.AccountRepo.Login(model.Email, model.PasswordHash);
             if (result != null)
             {
                 return Ok("Đăng nhập thành công");
@@ -41,8 +41,7 @@ namespace JobeeWepAppAPI.Controllers
         [HttpGet("users")]
         public async Task<IActionResult> GetUsers()
         {
-            var user = await _unitOfWork.AccountRepo.getAll();
-
+            var user = await _unitOfWork.AccountRepo.getAll(); 
             if(user == null)
             {
                 return BadRequest(user);
@@ -59,7 +58,7 @@ namespace JobeeWepAppAPI.Controllers
                 _user.Email = user.Email;
                 _user.PasswordHash = user.PasswordHash;
                 _user.Role = "JobSeeker";
-                _unitOfWork.AccountRepo.add(_user);
+                await _unitOfWork.AccountRepo.add(_user);
                 return Created("Da tao thanh cong", _user);
             }
             return BadRequest("Vui lòng nhập đầy đủ thông tin");

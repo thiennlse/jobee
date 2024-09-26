@@ -5,14 +5,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BusinessObject.RequestModel
+namespace BusinessObject.ResponseModel
 {
-    public class RegisterAccountModel
+    public class AccountResponse
     {
+        public int UserId { get; set; }
         [Required]
-        [EmailAddress(ErrorMessage = "Vui lòng nhập đúng email")]
         public string Email { get; set; } = null!;
         [Required]
+        public string Role { get; set; } = null!;
+        [Required]
         public string PasswordHash { get; set; } = null!;
+        [Required]
+        public DateTime CreatedAt { get; set; }
     }
 }

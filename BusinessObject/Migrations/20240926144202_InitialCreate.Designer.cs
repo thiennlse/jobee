@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BusinessObject.Migrations
 {
     [DbContext(typeof(DBContext))]
-    [Migration("20240917141011_InitialCreated")]
-    partial class InitialCreated
+    [Migration("20240926144202_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -34,20 +34,17 @@ namespace BusinessObject.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ApplicationId"), 1L, 1);
 
-                    b.Property<DateTime?>("AppliedAt")
-                        .IsRequired()
+                    b.Property<DateTime>("AppliedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
                         .HasDefaultValueSql("(getdate())");
 
-                    b.Property<int?>("JobId")
-                        .IsRequired()
+                    b.Property<int>("JobId")
                         .HasMaxLength(255)
                         .IsUnicode(false)
                         .HasColumnType("int");
 
-                    b.Property<int?>("JobSeekerId")
-                        .IsRequired()
+                    b.Property<int>("JobSeekerId")
                         .HasMaxLength(255)
                         .IsUnicode(false)
                         .HasColumnType("int");
@@ -83,8 +80,7 @@ namespace BusinessObject.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("CreateAt")
-                        .IsRequired()
+                    b.Property<DateTime>("CreateAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
                         .HasDefaultValueSql("(getdate())");
@@ -121,8 +117,7 @@ namespace BusinessObject.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("JobId"), 1L, 1);
 
-                    b.Property<DateTime?>("CreateAt")
-                        .IsRequired()
+                    b.Property<DateTime>("CreateAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
                         .HasDefaultValueSql("(getdate())");
@@ -131,8 +126,7 @@ namespace BusinessObject.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int?>("EmployerId")
-                        .IsRequired()
+                    b.Property<int>("EmployerId")
                         .HasMaxLength(255)
                         .IsUnicode(false)
                         .HasColumnType("int");
@@ -184,12 +178,10 @@ namespace BusinessObject.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PaymentId"), 1L, 1);
 
-                    b.Property<decimal?>("Amount")
-                        .IsRequired()
+                    b.Property<decimal>("Amount")
                         .HasColumnType("decimal(10,2)");
 
-                    b.Property<DateTime?>("PaymentDate")
-                        .IsRequired()
+                    b.Property<DateTime>("PaymentDate")
                         .HasColumnType("datetime");
 
                     b.Property<string>("PaymentMethod")
@@ -204,8 +196,7 @@ namespace BusinessObject.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(50)");
 
-                    b.Property<int?>("UserId")
-                        .IsRequired()
+                    b.Property<int>("UserId")
                         .HasMaxLength(255)
                         .IsUnicode(false)
                         .HasColumnType("int");
@@ -215,67 +206,6 @@ namespace BusinessObject.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Payments");
-                });
-
-            modelBuilder.Entity("BusinessObject.Models.Profile", b =>
-                {
-                    b.Property<int>("ProfileId")
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(255)
-                        .IsUnicode(false)
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProfileId"), 1L, 1);
-
-                    b.Property<string>("Address")
-                        .HasMaxLength(255)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<int?>("Age")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("int");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(300)
-                        .HasColumnType("text");
-
-                    b.Property<string>("FullName")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<string>("JobTitle")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(100)");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(20)");
-
-                    b.Property<string>("ProfilePicture")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<int?>("UserId")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .IsUnicode(false)
-                        .HasColumnType("int");
-
-                    b.HasKey("ProfileId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Profiles");
                 });
 
             modelBuilder.Entity("BusinessObject.Models.SubscriptionPlan", b =>
@@ -288,8 +218,7 @@ namespace BusinessObject.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PlanId"), 1L, 1);
 
-                    b.Property<int?>("Duration")
-                        .IsRequired()
+                    b.Property<int>("Duration")
                         .HasColumnType("int");
 
                     b.Property<string>("PlanName")
@@ -298,8 +227,7 @@ namespace BusinessObject.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(255)");
 
-                    b.Property<decimal?>("Price")
-                        .IsRequired()
+                    b.Property<decimal>("Price")
                         .HasColumnType("decimal(10,2)");
 
                     b.HasKey("PlanId")
@@ -313,16 +241,26 @@ namespace BusinessObject.Migrations
                     b.Property<int>("UserId")
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(255)
-                        .IsUnicode(true)
+                        .IsUnicode(false)
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"), 1L, 1);
 
-                    b.Property<DateTime?>("CreatedAt")
-                        .IsRequired()
+                    b.Property<string>("Address")
+                        .HasMaxLength(255)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int?>("Age")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
                         .HasDefaultValueSql("(getdate())");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -330,8 +268,30 @@ namespace BusinessObject.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(255)");
 
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("JobTitle")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(100)");
+
                     b.Property<string>("PasswordHash")
                         .IsRequired()
+                        .HasMaxLength(255)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasMaxLength(20)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<string>("ProfilePicture")
                         .HasMaxLength(255)
                         .IsUnicode(false)
                         .HasColumnType("varchar(255)");
@@ -341,12 +301,6 @@ namespace BusinessObject.Migrations
                         .HasMaxLength(50)
                         .IsUnicode(false)
                         .HasColumnType("varchar(50)");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(100)");
 
                     b.HasKey("UserId");
 
@@ -366,22 +320,18 @@ namespace BusinessObject.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserSubscriptionId"), 1L, 1);
 
-                    b.Property<DateTime?>("EndDate")
-                        .IsRequired()
+                    b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime");
 
-                    b.Property<int?>("PlanId")
-                        .IsRequired()
+                    b.Property<int>("PlanId")
                         .HasMaxLength(255)
                         .IsUnicode(false)
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("StartDate")
-                        .IsRequired()
+                    b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime");
 
-                    b.Property<int?>("UserId")
-                        .IsRequired()
+                    b.Property<int>("UserId")
                         .HasMaxLength(255)
                         .IsUnicode(false)
                         .HasColumnType("int");
@@ -431,18 +381,6 @@ namespace BusinessObject.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("BusinessObject.Models.Profile", b =>
-                {
-                    b.HasOne("BusinessObject.Models.User", "User")
-                        .WithMany("Profiles")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_Profiles_UserId");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("BusinessObject.Models.UserSubscription", b =>
                 {
                     b.HasOne("BusinessObject.Models.SubscriptionPlan", "Plan")
@@ -476,8 +414,6 @@ namespace BusinessObject.Migrations
                     b.Navigation("Jobs");
 
                     b.Navigation("Payments");
-
-                    b.Navigation("Profiles");
 
                     b.Navigation("UserSubscriptions");
                 });

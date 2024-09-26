@@ -32,14 +32,12 @@ namespace BusinessObject.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ApplicationId"), 1L, 1);
 
-                    b.Property<DateTime?>("AppliedAt")
-                        .IsRequired()
+                    b.Property<DateTime>("AppliedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
                         .HasDefaultValueSql("(getdate())");
 
-                    b.Property<int?>("JobId")
-                        .IsRequired()
+                    b.Property<int>("JobId")
                         .HasMaxLength(255)
                         .IsUnicode(false)
                         .HasColumnType("int");
@@ -80,8 +78,7 @@ namespace BusinessObject.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("CreateAt")
-                        .IsRequired()
+                    b.Property<DateTime>("CreateAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
                         .HasDefaultValueSql("(getdate())");
@@ -118,8 +115,7 @@ namespace BusinessObject.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("JobId"), 1L, 1);
 
-                    b.Property<DateTime?>("CreateAt")
-                        .IsRequired()
+                    b.Property<DateTime>("CreateAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
                         .HasDefaultValueSql("(getdate())");
@@ -128,8 +124,7 @@ namespace BusinessObject.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int?>("EmployerId")
-                        .IsRequired()
+                    b.Property<int>("EmployerId")
                         .HasMaxLength(255)
                         .IsUnicode(false)
                         .HasColumnType("int");
@@ -181,12 +176,10 @@ namespace BusinessObject.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PaymentId"), 1L, 1);
 
-                    b.Property<decimal?>("Amount")
-                        .IsRequired()
+                    b.Property<decimal>("Amount")
                         .HasColumnType("decimal(10,2)");
 
-                    b.Property<DateTime?>("PaymentDate")
-                        .IsRequired()
+                    b.Property<DateTime>("PaymentDate")
                         .HasColumnType("datetime");
 
                     b.Property<string>("PaymentMethod")
@@ -201,8 +194,7 @@ namespace BusinessObject.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(50)");
 
-                    b.Property<int?>("UserId")
-                        .IsRequired()
+                    b.Property<int>("UserId")
                         .HasMaxLength(255)
                         .IsUnicode(false)
                         .HasColumnType("int");
@@ -224,8 +216,7 @@ namespace BusinessObject.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PlanId"), 1L, 1);
 
-                    b.Property<int?>("Duration")
-                        .IsRequired()
+                    b.Property<int>("Duration")
                         .HasColumnType("int");
 
                     b.Property<string>("PlanName")
@@ -234,8 +225,7 @@ namespace BusinessObject.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(255)");
 
-                    b.Property<decimal?>("Price")
-                        .IsRequired()
+                    b.Property<decimal>("Price")
                         .HasColumnType("decimal(10,2)");
 
                     b.HasKey("PlanId")
@@ -249,17 +239,17 @@ namespace BusinessObject.Migrations
                     b.Property<int>("UserId")
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(255)
-                        .IsUnicode(true)
+                        .IsUnicode(false)
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"), 1L, 1);
 
                     b.Property<string>("Address")
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
+                        .HasMaxLength(255)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(255)");
 
                     b.Property<int?>("Age")
-                        .HasMaxLength(30)
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
@@ -268,8 +258,7 @@ namespace BusinessObject.Migrations
                         .HasDefaultValueSql("(getdate())");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -279,13 +268,15 @@ namespace BusinessObject.Migrations
 
                     b.Property<string>("FullName")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasMaxLength(255)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("JobTitle")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasMaxLength(100)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(100)");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
@@ -294,24 +285,20 @@ namespace BusinessObject.Migrations
                         .HasColumnType("varchar(255)");
 
                     b.Property<string>("PhoneNumber")
-                        .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)");
+                        .HasMaxLength(20)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(20)");
 
                     b.Property<string>("ProfilePicture")
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasMaxLength(255)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("Role")
                         .IsRequired()
                         .HasMaxLength(50)
                         .IsUnicode(false)
                         .HasColumnType("varchar(50)");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(100)");
 
                     b.HasKey("UserId");
 
@@ -331,22 +318,18 @@ namespace BusinessObject.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserSubscriptionId"), 1L, 1);
 
-                    b.Property<DateTime?>("EndDate")
-                        .IsRequired()
+                    b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime");
 
-                    b.Property<int?>("PlanId")
-                        .IsRequired()
+                    b.Property<int>("PlanId")
                         .HasMaxLength(255)
                         .IsUnicode(false)
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("StartDate")
-                        .IsRequired()
+                    b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime");
 
-                    b.Property<int?>("UserId")
-                        .IsRequired()
+                    b.Property<int>("UserId")
                         .HasMaxLength(255)
                         .IsUnicode(false)
                         .HasColumnType("int");

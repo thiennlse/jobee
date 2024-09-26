@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace BusinessObject.Migrations
 {
-    public partial class InitialCreated : Migration
+    public partial class InitialCreate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -45,13 +45,19 @@ namespace BusinessObject.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(type: "int", maxLength: 255, nullable: false)
+                    UserId = table.Column<int>(type: "int", unicode: false, maxLength: 255, nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Email = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: false),
                     Role = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false),
                     PasswordHash = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false, defaultValueSql: "(getdate())"),
-                    Username = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: false)
+                    Address = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true),
+                    Age = table.Column<int>(type: "int", nullable: true),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    FullName = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true),
+                    JobTitle = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: true),
+                    PhoneNumber = table.Column<string>(type: "varchar(20)", unicode: false, maxLength: 20, nullable: true),
+                    ProfilePicture = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -131,32 +137,6 @@ namespace BusinessObject.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Profiles",
-                columns: table => new
-                {
-                    ProfileId = table.Column<int>(type: "int", unicode: false, maxLength: 255, nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", unicode: false, maxLength: 255, nullable: false),
-                    FullName = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: false),
-                    PhoneNumber = table.Column<string>(type: "varchar(20)", unicode: false, maxLength: 20, nullable: false),
-                    Description = table.Column<string>(type: "text", maxLength: 300, nullable: true),
-                    Address = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true),
-                    JobTitle = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: false),
-                    Age = table.Column<int>(type: "int", maxLength: 30, nullable: false),
-                    ProfilePicture = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Profiles", x => x.ProfileId);
-                    table.ForeignKey(
-                        name: "FK_Profiles_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "UserId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "UserSubscriptions",
                 columns: table => new
                 {
@@ -200,11 +180,6 @@ namespace BusinessObject.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Profiles_UserId",
-                table: "Profiles",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
                 name: "UQ__Users__A9D10534D02B0127",
                 table: "Users",
                 column: "Email",
@@ -234,9 +209,6 @@ namespace BusinessObject.Migrations
 
             migrationBuilder.DropTable(
                 name: "Payments");
-
-            migrationBuilder.DropTable(
-                name: "Profiles");
 
             migrationBuilder.DropTable(
                 name: "UserSubscriptions");

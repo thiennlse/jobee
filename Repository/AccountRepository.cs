@@ -1,6 +1,7 @@
 ﻿using BusinessObject.Models;
 using Microsoft.EntityFrameworkCore;
 using Repository;
+using Repository.Handler;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -23,6 +24,7 @@ namespace Repository
 
         public async Task add(User user)
         {
+            user.PasswordHash = HashPassword.HashPasswordToSha256(user.PasswordHash);
             await _baseRepository.add(user);
         }
 
@@ -43,6 +45,7 @@ namespace Repository
 
         public async Task<User> Login(string email, string password)
         {
+            password  = HashPassword.HashPasswordToSha256(password);
             return await _context.Users.FirstOrDefaultAsync(u => u.Email.Equals(email) && u.PasswordHash.Equals(password));
         }
 

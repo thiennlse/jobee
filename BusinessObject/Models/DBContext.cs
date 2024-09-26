@@ -185,8 +185,7 @@ namespace BusinessObject.Models
 
                 entity.Property(e => e.UserId)
                     .HasMaxLength(255)
-                    .IsUnicode(true).
-                    ValueGeneratedOnAdd();   
+                    .IsUnicode(false);
 
                 entity.Property(e => e.CreatedAt)
                     .HasColumnType("datetime")

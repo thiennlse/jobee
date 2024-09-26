@@ -21,17 +21,17 @@ namespace BusinessObject.Models
         public string? Address { get; set; }
         public int? Age { get; set; }
         public string? Description { get; set; }
-        public string FullName { get; set; } = null!;
-        public string JobTitle { get; set; } = null!;
+        public string? FullName { get; set; }
+        public string? JobTitle { get; set; }
         public string? PhoneNumber { get; set; }
         public string? ProfilePicture { get; set; }
         [JsonIgnore]
-        public virtual ICollection<Application> Applications { get; set; }
+        public virtual ICollection<Application>? Applications { get; set; }
         [JsonIgnore]
-        public virtual ICollection<Job> Jobs { get; set; }
+        public virtual ICollection<Job>? Jobs { get; set; }
         [JsonIgnore]
-        public virtual ICollection<Payment> Payments { get; set; }
+        public virtual ICollection<Payment>? Payments { get; set; }
         [JsonIgnore]
-        public virtual ICollection<UserSubscription> UserSubscriptions { get; set; }
+        public virtual ICollection<UserSubscription>? UserSubscriptions { get; set; }
     }
 }

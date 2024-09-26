@@ -1,4 +1,5 @@
 ﻿using BusinessObject.Models;
+using BusinessObject.RequestModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services;
@@ -33,10 +34,20 @@ namespace JobeeWepAppAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddJob([FromBody] Job job)
+        public async Task<IActionResult> AddJob([FromBody] JobRequest job)
         {
-            await _unitOfWork.JobRepo.add(job);
-            return Ok(job);
+            Job _job = new Job();
+            _job.Employer = await _unitOfWork.AccountRepo.getById(job.EmployerId);
+            _job.EmployerId = job.EmployerId;
+            _job.Title = job.Title;
+            _job.Description = job.Description;
+            _job.JobType = job.JobType;
+            _job.Status = job.Status;
+            _job.Location = job.Location;
+            _job.CreateAt = DateTime.Now;
+            _job.SalaryRange = job.SalaryRange;
+            await _unitOfWork.JobRepo.add(_job);
+            return Ok(_job);
         }
         [HttpPatch]
         public async Task<IActionResult> UpdateJob([FromBody] Job job)
