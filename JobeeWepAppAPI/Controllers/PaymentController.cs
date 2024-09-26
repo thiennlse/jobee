@@ -20,7 +20,11 @@ namespace JobeeWepAppAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllPayment()
         {
-            List<Payment> payments = await _unitOfWork.PaymentRepository.getAll();
+            var payments = await _unitOfWork.PaymentRepository.getAll();
+            if (payments == null || !payments.Any())
+            {
+                return NotFound("Không tìm thấy bản ghi nào của Payment");
+            }
             return Ok(payments);
         }
 

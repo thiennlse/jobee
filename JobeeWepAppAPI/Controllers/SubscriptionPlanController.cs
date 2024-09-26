@@ -46,6 +46,17 @@ namespace JobeeWepAppAPI.Controllers
         [HttpDelete]
         public async Task<IActionResult> DeletePlan(int id)
         {
+            if (id == 0)
+            {
+                return BadRequest("Vui lòng nhập id");
+            }
+
+            var plan = await _unitOfWork.SubcriptionPlanRepository.getById(id);
+            if (plan == null)
+            {
+                return NotFound($"Không tìm thấy Subscription Plan với ID {id}");
+            }
+
             await _unitOfWork.SubcriptionPlanRepository.deleteById(id);
             return NoContent();
         }

@@ -47,6 +47,17 @@ namespace JobeeWepAppAPI.Controllers
         [HttpDelete]
         public async Task<IActionResult> DeleteJob(int id)
         {
+            if (id == 0)
+            {
+                return BadRequest("Vui lòng nhập id");
+            }
+
+            var job = await _unitOfWork.JobRepo.getById(id);
+            if (job == null)
+            {
+                return NotFound($"Không tìm thấy Job với ID {id}");
+            }
+
             await _unitOfWork.JobRepo.deleteById(id);
             return NoContent();
         }
