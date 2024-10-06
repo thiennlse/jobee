@@ -41,8 +41,8 @@ namespace JobeeWepAppAPI.Controllers
         [HttpGet("users")]
         public async Task<IActionResult> GetUsers()
         {
-            var user = await _unitOfWork.AccountRepo.getAll(); 
-            if(user == null)
+            var user = await _unitOfWork.AccountRepo.getAll();
+            if (user == null)
             {
                 return BadRequest(user);
             }
@@ -71,6 +71,7 @@ namespace JobeeWepAppAPI.Controllers
             {
                 return BadRequest("Vui lòng nhập id người dùng hợp lệ");
             }
+
 
             var user = await _unitOfWork.AccountRepo.getById(id);
             if (user == null)

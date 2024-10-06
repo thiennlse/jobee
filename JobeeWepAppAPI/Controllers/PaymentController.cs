@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services.UnitOfWork;
+using Net.payOS;
+using Net.payOS.Types;
 
 namespace JobeeWepAppAPI.Controllers
 {
@@ -10,10 +12,12 @@ namespace JobeeWepAppAPI.Controllers
     public class PaymentController : ControllerBase
     {
         private readonly UnitOfWork _unitOfWork;
+        private readonly PayOS _payOS;
 
-        public PaymentController(UnitOfWork unitOfWork)
+        public PaymentController(UnitOfWork unitOfWork, PayOS payOS)
         {
             _unitOfWork = unitOfWork;
+            _payOS = payOS;
         }
 
         [HttpGet("payments")]
@@ -84,6 +88,28 @@ namespace JobeeWepAppAPI.Controllers
 
             await _unitOfWork.PaymentRepository.deleteById(id);
             return Ok($"Đã xóa Payment với ID {id}");
+        }
+
+
+        [HttpPost("payos_transfer_handler")]
+        public IActionResult payOSTransferHandler(WebhookType body)
+        {
+            try
+            {
+                WebhookData data = _payOS.verifyPaymentWebhookData(body);
+
+                if (data.description == body.data.description || data.description == "VQRIO123")
+                {
+                    return Ok("Ok");
+                }
+                return Ok("Ok");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                return Ok("fail");
+            }
+
         }
     }
 }

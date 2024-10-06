@@ -13,7 +13,7 @@ namespace JobeeWepAppAPI.Controllers
     {
         private readonly UnitOfWork _unitOfWork;
 
-        public ApplicationController(UnitOfWork unitOfWork )
+        public ApplicationController(UnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
@@ -23,7 +23,7 @@ namespace JobeeWepAppAPI.Controllers
         {
             var applications = await _unitOfWork.ApplicationRepo.getAll();
 
-            if(applications == null)
+            if (applications == null)
             {
                 return NotFound("Không tìm thấy bản ghi nào của Application");
             }
@@ -33,13 +33,13 @@ namespace JobeeWepAppAPI.Controllers
         [HttpGet("application/{id}")]
         public async Task<IActionResult> GetApplicationById(int id)
         {
-            if(id == 0)
+            if (id == 0)
             {
                 return BadRequest("Vui lòng nhập id");
             }
             var application = await _unitOfWork.ApplicationRepo.getById(id);
 
-            if(application == null)
+            if (application == null)
             {
                 return NotFound($"Không tìm thấy Application {id}");
             }
@@ -56,11 +56,11 @@ namespace JobeeWepAppAPI.Controllers
             _application.Resume = application.Resume;
             _application.JobId = application.JobId;
 
-            if ( await _unitOfWork.AccountRepo.getById(application.JobSeekerId) == _application.JobSeeker)
+            if (await _unitOfWork.AccountRepo.getById(application.JobSeekerId) == _application.JobSeeker)
             {
                 return NotFound($"Không tìm thấy {application.JobSeekerId}");
             }
-            if (application==null)
+            if (application == null)
             {
                 return BadRequest("Vui lòng nhập đầy đủ thông tin");
             }
@@ -76,7 +76,7 @@ namespace JobeeWepAppAPI.Controllers
                 return BadRequest("Vui lòng nhập đầy đủ thông tin");
             }
 
-            if(_application != null)
+            if (_application != null)
             {
                 await _unitOfWork.ApplicationRepo.update(_application);
                 return Ok(app);
@@ -86,20 +86,20 @@ namespace JobeeWepAppAPI.Controllers
         [HttpDelete("delete")]
         public async Task<IActionResult> deleteApplication([FromBody] int id)
         {
-            if(id == 0)
+            if (id == 0)
             {
                 return BadRequest("Vui lòng nhập id");
             }
             var _application = await _unitOfWork.ApplicationRepo.getById(id);
 
-            if(_application == null)
+            if (_application == null)
             {
                 return NotFound($"Không tìm thấy Application {id}");
             }
-            
+
             await _unitOfWork.ApplicationRepo.deleteById(id);
             return Ok($"Đã xóa bản ghi {id}");
         }
-        
+
     }
 }

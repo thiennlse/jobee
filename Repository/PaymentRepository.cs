@@ -1,4 +1,7 @@
 ﻿using BusinessObject.Models;
+using Microsoft.Extensions.Configuration;
+using Net.payOS;
+using Net.payOS.Types;
 using Repository.Interface;
 using System;
 using System.Collections.Generic;
@@ -8,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Repository
 {
-    public class PaymentRepository : BaseRepository<Payment> ,IPayment
+    public class PaymentRepository : BaseRepository<Payment>, IPayment
     {
         private readonly BaseRepository<Payment> _basesRepository;
         private readonly DBContext _dbContext;
@@ -19,29 +22,128 @@ namespace Repository
             _dbContext = dbContext;
         }
 
-        public async Task add(Payment entity)
+        public async Task<PaymentLinkInformation> cancelPaymentLink(int id, string reason)
         {
-           await _basesRepository.add(entity);
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+
+            IConfigurationRoot configuration = builder.Build();
+
+            var cliend_id = configuration["Environment:PAYOS_CLIENT_ID"];
+            var api_key = configuration["Environment:PAYOS_API_KEY"];
+            var checkSum_key = configuration["Environment:PAYOS_CHECKSUM_KEY"];
+
+            PayOS payOS = new PayOS(cliend_id, api_key, checkSum_key);
+
+            PaymentLinkInformation paymentLinkInformation = await payOS.cancelPaymentLink(id, reason);
+            return paymentLinkInformation;
         }
 
-        public async Task deleteById(int id)
+        public async Task<string> confirmWebhook(string url)
         {
-            await _basesRepository.deleteById(id);
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+
+            IConfigurationRoot configuration = builder.Build();
+
+            var cliend_id = configuration["Environment:PAYOS_CLIENT_ID"];
+            var api_key = configuration["Environment:PAYOS_API_KEY"];
+            var checkSum_key = configuration["Environment:PAYOS_CHECKSUM_KEY"];
+
+            PayOS payOS = new PayOS(cliend_id, api_key, checkSum_key);
+
+            return await payOS.confirmWebhook(url);
         }
 
-        public async Task<List<Payment>> getAll()
+        public async Task<CreatePaymentResult> createPaymentLink(PaymentData paymentData)
         {
-            return await _basesRepository.getAll(); 
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+
+            IConfigurationRoot configuration = builder.Build();
+
+            var cliend_id = configuration["Environment:PAYOS_CLIENT_ID"];
+            var api_key = configuration["Environment:PAYOS_API_KEY"];
+            var checkSum_key = configuration["Environment:PAYOS_CHECKSUM_KEY"];
+
+            PayOS payOS = new PayOS(cliend_id, api_key, checkSum_key);
+            PaymentData payment = new PaymentData
+                (
+                paymentData.orderCode,
+                paymentData.amount,
+                "Thanh toan don hang",
+                paymentData.items,
+                paymentData.cancelUrl,
+                paymentData.returnUrl
+                );
+            CreatePaymentResult createPayment = await payOS.createPaymentLink(paymentData);
+            return createPayment;
         }
 
-        public async Task<Payment> getById(int id)
+        public async Task<PaymentLinkInformation> getPaymentLinkInformation(int id)
         {
-            return await _basesRepository.getById(id);
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+
+            IConfigurationRoot configuration = builder.Build();
+
+            var cliend_id = configuration["Environment:PAYOS_CLIENT_ID"];
+            var api_key = configuration["Environment:PAYOS_API_KEY"];
+            var checkSum_key = configuration["Environment:PAYOS_CHECKSUM_KEY"];
+
+            PayOS payOS = new PayOS(cliend_id, api_key, checkSum_key);
+
+            PaymentLinkInformation paymentLinkInformation = await payOS.getPaymentLinkInformation(id);
+            return paymentLinkInformation;
         }
 
-        public async Task<Payment> update(Payment entity)
+        public WebhookData verifyPaymentWebhookData(WebhookType webhookType)
         {
-            return await _basesRepository.update(entity);
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+
+            IConfigurationRoot configuration = builder.Build();
+
+            var cliend_id = configuration["Environment:PAYOS_CLIENT_ID"];
+            var api_key = configuration["Environment:PAYOS_API_KEY"];
+            var checkSum_key = configuration["Environment:PAYOS_CHECKSUM_KEY"];
+
+            PayOS payOS = new PayOS(cliend_id, api_key, checkSum_key);
+
+            /*
+webhookBody = {
+    "code": "00",
+    "desc": "success",
+    "success": true,
+    "data": {
+        "accountNumber": "0399609015",
+        "amount": 1000,
+        "description": "Ma giao dich thu nghiem",
+        "reference": "FT23325781308800",
+        "transactionDateTime": "2023-11-21 15:20:34",
+        "virtualAccountNumber": "",
+        "counterAccountBankId": "",
+        "counterAccountBankName": "",
+        "counterAccountName": "",
+        "counterAccountNumber": "",
+        "virtualAccountName": "",
+        "orderCode": 52422,
+        "currency": "VND",
+        "paymentLinkId": "b646a39ca8654d8fa03e0dc8bec7264c",
+        "code": "00",
+        "desc": "success"
+    },
+    "signature": "1f2eb76896a3a8e10e1f560bed4087f788c5d654af6d0a1d394351806a34d6dd"
+}
+*/
+
+            WebhookData webhookData = payOS.verifyPaymentWebhookData(webhookType);
+            return webhookData;
         }
     }
 }
