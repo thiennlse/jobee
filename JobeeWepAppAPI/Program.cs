@@ -24,7 +24,9 @@ builder.Services.AddCors(options =>
     options.AddDefaultPolicy(
         policy =>
         {
-            policy.WithOrigins("*").AllowAnyHeader().AllowAnyMethod();
+            policy.WithOrigins("http://localhost:5173")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
         });
 });
 builder.Services.AddScoped<UnitOfWork>();
@@ -40,5 +42,4 @@ app.UseStaticFiles();
 app.UseAuthorization();
 app.UseCors();
 app.MapControllers();
-
 app.Run();

@@ -115,33 +115,6 @@ namespace Repository
 
             PayOS payOS = new PayOS(cliend_id, api_key, checkSum_key);
 
-            /*
-webhookBody = {
-    "code": "00",
-    "desc": "success",
-    "success": true,
-    "data": {
-        "accountNumber": "0399609015",
-        "amount": 1000,
-        "description": "Ma giao dich thu nghiem",
-        "reference": "FT23325781308800",
-        "transactionDateTime": "2023-11-21 15:20:34",
-        "virtualAccountNumber": "",
-        "counterAccountBankId": "",
-        "counterAccountBankName": "",
-        "counterAccountName": "",
-        "counterAccountNumber": "",
-        "virtualAccountName": "",
-        "orderCode": 52422,
-        "currency": "VND",
-        "paymentLinkId": "b646a39ca8654d8fa03e0dc8bec7264c",
-        "code": "00",
-        "desc": "success"
-    },
-    "signature": "1f2eb76896a3a8e10e1f560bed4087f788c5d654af6d0a1d394351806a34d6dd"
-}
-*/
-
             WebhookData webhookData = payOS.verifyPaymentWebhookData(webhookType);
             return webhookData;
         }
