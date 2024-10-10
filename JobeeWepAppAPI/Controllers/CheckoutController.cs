@@ -36,7 +36,7 @@ namespace JobeeWepAppAPI.Controllers
 
                 return Ok(createPayment.checkoutUrl);
             }
-            catch (System.Exception exception)
+            catch (Exception exception)
             {
                 return Ok(model.returnUrl);
             }

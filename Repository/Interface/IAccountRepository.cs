@@ -1,4 +1,5 @@
 ﻿using BusinessObject.Models;
+using BusinessObject.ResponseModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,5 +12,4 @@ namespace Repository
     {
         Task<User> Login(string username, string password);
     }
-
 }

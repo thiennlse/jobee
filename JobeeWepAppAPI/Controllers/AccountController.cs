@@ -6,6 +6,10 @@ using System.Text.Json;
 using BusinessObject.RequestModel;
 using Services.UnitOfWork;
 using BusinessObject.ResponseModel;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
 
 namespace JobeeWepAppAPI.Controllers
 {
@@ -14,10 +18,12 @@ namespace JobeeWepAppAPI.Controllers
     public class AccountController : Controller
     {
         private readonly UnitOfWork _unitOfWork;
+        private IConfiguration _config;
 
-        public AccountController(UnitOfWork unitOfWork)
+        public AccountController(UnitOfWork unitOfWork, IConfiguration config)
         {
             _unitOfWork = unitOfWork;
+            _config = config;
         }
 
         [HttpPost("login")]
@@ -30,7 +36,25 @@ namespace JobeeWepAppAPI.Controllers
             var result = await _unitOfWork.AccountRepo.Login(model.Email, model.PasswordHash);
             if (result != null)
             {
-                return Ok("Đăng nhập thành công");
+                var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+                var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+                var Sectoken = new JwtSecurityToken(_config["Jwt:Issuer"],
+                  _config["Jwt:Issuer"],
+                  null,
+                  expires: DateTime.Now.AddMinutes(120),
+                  signingCredentials: credentials);
+
+                var token = new JwtSecurityTokenHandler().WriteToken(Sectoken);
+                AccountResponse response = new AccountResponse
+                {
+                    IsSuccess = true,
+                    JwtToken = token,
+                    Role = result.Role,
+                    UserId = result.UserId
+                };
+
+                return Ok(response);
             }
             else
             {

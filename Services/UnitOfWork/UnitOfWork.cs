@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BusinessObject.Models;
+using Microsoft.Extensions.Configuration;
 
 namespace Services.UnitOfWork
 {
@@ -13,11 +14,13 @@ namespace Services.UnitOfWork
         private AccountRepository _accountRepository;
         private ApplicationRepository _applicationRepository;
         private QuestionRepository _questionRepository;
+        private IConfiguration _configuration;
+        private BaseRepository<User> _baseRepository;
         private JobRepository _jobRepository;
         private SubcriptionPlanRepository _subcriptionPlanRepository;
         private PaymentRepository _paymentRepository;
         private DBContext _dbContext;
-        public UnitOfWork(DBContext dbContext)
+        public UnitOfWork(DBContext dbContext, IConfiguration configuration)
         {
             _dbContext = dbContext;
         }
@@ -52,7 +55,7 @@ namespace Services.UnitOfWork
             {
                 if (_accountRepository == null)
                 {
-                    _accountRepository = new AccountRepository(_dbContext);
+                    _accountRepository = new AccountRepository(_dbContext,_configuration);
                 }
                 return _accountRepository;
             }
