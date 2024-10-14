@@ -1,21 +1,24 @@
-#See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
-
-FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
-WORKDIR /app
-EXPOSE 80
-
+﻿# Sử dụng hình ảnh .NET 6.0 SDK làm hình ảnh cơ sở
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
-WORKDIR /src
-COPY ["JobeeWepAppAPI/JobeeWepAppAPI.csproj", "JobeeWepAppAPI/"]
-RUN dotnet restore "JobeeWepAppAPI/JobeeWepAppAPI.csproj"
-COPY . .
-WORKDIR "/src/JobeeWepAppAPI"
-RUN dotnet build "JobeeWepAppAPI.csproj" -c Release -o /app/build
 
-FROM build AS publish
-RUN dotnet publish "JobeeWepAppAPI.csproj" -c Release -o /app/publish /p:UseAppHost=false
-
-FROM base AS final
+# Đặt thư mục làm việc
 WORKDIR /app
-COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "JobeeWepAppAPI.dll"]
+
+# Sao chép csproj và khôi phục các gói
+COPY *.csproj ./
+RUN dotnet restore
+
+# Sao chép tất cả mã nguồn
+COPY . ./
+
+# Biên dịch ứng dụng
+RUN dotnet publish -c Release -o out
+
+# Tạo hình ảnh runtime
+FROM mcr.microsoft.com/dotnet/aspnet:6.0
+
+WORKDIR /app
+COPY --from=build /app/out .
+
+# Chạy ứng dụng
+ENTRYPOINT ["dotnet", "JobeeWebAPI.dll"] # Thay YourProjectName bằng tên dự án của bạn

@@ -1,15 +1,13 @@
 ﻿using BusinessObject.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Storage;
-using Services;
-using System.Text.Json;
 using BusinessObject.RequestModel;
 using Services.UnitOfWork;
 using BusinessObject.ResponseModel;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
+using Services;
+using PdfSharp.Pdf.IO;
 
 namespace JobeeWepAppAPI.Controllers
 {
@@ -19,11 +17,32 @@ namespace JobeeWepAppAPI.Controllers
     {
         private readonly UnitOfWork _unitOfWork;
         private IConfiguration _config;
-
-        public AccountController(UnitOfWork unitOfWork, IConfiguration config)
+        private readonly IChatGpt _openAIService;
+        private PdfReader _pdfReader;
+        public AccountController(UnitOfWork unitOfWork, IConfiguration config, IChatGpt openAIService)
         {
             _unitOfWork = unitOfWork;
             _config = config;
+            _openAIService = openAIService;
+        }
+
+        [HttpPost("grade")]
+        public async Task<IActionResult> GradeCV(IFormFile pdfFile)
+        {
+            try
+            {
+                if (pdfFile == null || pdfFile.Length == 0)
+                {
+                    return BadRequest("A PDF file is required.");
+                }
+                string extractedText = await _openAIService.PDFToString(pdfFile);
+                var result = await _openAIService.GradeCV(extractedText);
+                return Ok(result);
+            }
+            catch (Exception ex) 
+            {
+                return BadRequest($"{ex.Message}");
+            }
         }
 
         [HttpPost("login")]

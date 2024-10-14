@@ -8,6 +8,7 @@ using Net.payOS;
 using Repository;
 using Services.UnitOfWork;
 using System.Text;
+using Services;
 
 IConfiguration configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
 #region PayOS
@@ -97,6 +98,7 @@ builder.Services.AddCors(options =>
         });
 });
 builder.Services.AddScoped<UnitOfWork>();
+builder.Services.AddScoped<IChatGpt, ChatGptService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
