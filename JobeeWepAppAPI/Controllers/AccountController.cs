@@ -1,11 +1,13 @@
 ﻿using BusinessObject.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Storage;
-using Services;
-using System.Text.Json;
 using BusinessObject.RequestModel;
 using Services.UnitOfWork;
 using BusinessObject.ResponseModel;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
+using Services;
+using PdfSharp.Pdf.IO;
 
 namespace JobeeWepAppAPI.Controllers
 {
@@ -14,10 +16,33 @@ namespace JobeeWepAppAPI.Controllers
     public class AccountController : Controller
     {
         private readonly UnitOfWork _unitOfWork;
-
-        public AccountController(UnitOfWork unitOfWork)
+        private IConfiguration _config;
+        private readonly IChatGpt _openAIService;
+        private PdfReader _pdfReader;
+        public AccountController(UnitOfWork unitOfWork, IConfiguration config, IChatGpt openAIService)
         {
             _unitOfWork = unitOfWork;
+            _config = config;
+            _openAIService = openAIService;
+        }
+
+        [HttpPost("grade")]
+        public async Task<IActionResult> GradeCV(IFormFile pdfFile)
+        {
+            try
+            {
+                if (pdfFile == null || pdfFile.Length == 0)
+                {
+                    return BadRequest("A PDF file is required.");
+                }
+                string extractedText = await _openAIService.PDFToString(pdfFile);
+                var result = await _openAIService.GradeCV(extractedText);
+                return Ok(result);
+            }
+            catch (Exception ex) 
+            {
+                return BadRequest($"{ex.Message}");
+            }
         }
 
         [HttpPost("login")]
@@ -30,7 +55,25 @@ namespace JobeeWepAppAPI.Controllers
             var result = await _unitOfWork.AccountRepo.Login(model.Email, model.PasswordHash);
             if (result != null)
             {
-                return Ok("Đăng nhập thành công");
+                var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+                var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+                var Sectoken = new JwtSecurityToken(_config["Jwt:Issuer"],
+                  _config["Jwt:Issuer"],
+                  null,
+                  expires: DateTime.Now.AddMinutes(120),
+                  signingCredentials: credentials);
+
+                var token = new JwtSecurityTokenHandler().WriteToken(Sectoken);
+                AccountResponse response = new AccountResponse
+                {
+                    IsSuccess = true,
+                    JwtToken = token,
+                    Role = result.Role,
+                    UserId = result.UserId
+                };
+
+                return Ok(response);
             }
             else
             {

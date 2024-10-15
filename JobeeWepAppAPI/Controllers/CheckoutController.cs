@@ -32,14 +32,13 @@ namespace JobeeWepAppAPI.Controllers
                 List<ItemData> items = new List<ItemData>();
                 items.Add(item);
                 PaymentData paymentData = new PaymentData(orderCode, (int)plan.Price, "Thanh toan don hang", items, model.cancelUrl, model.returnUrl);
-                CreatePaymentResult createPayment = await _payOS.createPaymentLink(paymentData);
+                CreatePaymentResult createPayment = await _unitOfWork.PaymentRepository.createPaymentLink(paymentData);
 
-                return Redirect(createPayment.checkoutUrl);
+                return Ok(createPayment.checkoutUrl);
             }
-            catch (System.Exception exception)
+            catch (Exception exception)
             {
-                Console.WriteLine(exception);
-                return Redirect(model.returnUrl);
+                return Ok(model.returnUrl);
             }
         }
     }
