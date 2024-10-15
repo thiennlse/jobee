@@ -24,7 +24,7 @@ WORKDIR /app
 COPY --from=build /app/out ./
 
 # Chỉ định cổng mà ứng dụng sẽ lắng nghe
-EXPOSE 5173
+EXPOSE 80
 
 # Chạy ứng dụng
 ENTRYPOINT ["dotnet", "JobeeWepAppAPI.dll"]

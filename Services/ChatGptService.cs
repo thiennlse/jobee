@@ -2,29 +2,30 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Mscc.GenerativeAI;
-using PdfSharp.Pdf;
-using PdfSharp.Pdf.IO;
 using System.Text;
+using iText.Kernel.Pdf;
+using iText.Kernel.Pdf.Canvas.Parser;
 
 namespace Services;
 
 public class ChatGptService : IChatGpt
 {
     private readonly IConfiguration _configuration;
-    private readonly IConfigurationSection _section;
+    private readonly string _generativeApiKey; // Thay đổi để lưu trữ API Key
 
-    public ChatGptService(IConfiguration configuration, IConfigurationSection section)
+    public ChatGptService(IConfiguration configuration)
     {
         _configuration = configuration;
-        _section = _configuration.GetSection("OpenAI");
+        _generativeApiKey = _configuration["GenerativeAI:ApiKey"] ?? throw new Exception("Cannot find Generative AI API Key"); // Lấy API Key từ cấu hình
     }
 
     public async Task<string> GradeCV(string cvContent)
     {
-        var googleAI = new GoogleAI(_section.GetSection("SecretKey").Value);
-        var prompt = $"Hãy đánh giá về nội dung CV này và đưa ra ý kiến {cvContent}";
+        var prompt = $"Hãy đánh giá về nội dung CV này và đưa ra ý kiến: {cvContent}";
         var model = new GenerativeModel();
-        var response  = model.GenerateContent(prompt).Result;
+        model.ApiKey = _generativeApiKey;
+        var response = await model.GenerateContent(prompt); // Sử dụng model với prompt
+
         return response.ToString();
     }
 
@@ -38,12 +39,13 @@ public class ChatGptService : IChatGpt
             file.CopyTo(stream);
         }
 
-        using (PdfDocument document = PdfReader.Open(tempFilePath, PdfDocumentOpenMode.ReadOnly))
+        using (PdfReader reader = new PdfReader(tempFilePath))
+        using (PdfDocument document = new PdfDocument(reader))
         {
-            for (int i = 0; i < document.PageCount; i++)
+            for (int i = 1; i <= document.GetNumberOfPages(); i++)
             {
-                var page = document.Pages[i];
-                text.AppendLine($"Page {i + 1}: (Nội dung không thể trích xuất bằng PdfSharp)");
+                var pageText = PdfTextExtractor.GetTextFromPage(document.GetPage(i));
+                text.AppendLine(pageText);
             }
         }
         File.Delete(tempFilePath);
