@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Cake.Core" Version="4.0.0" />
+    <PackageReference Include="itext7" Version="8.0.5" />
     <PackageReference Include="Mscc.GenerativeAI.Web" Version="1.6.5" />
     <PackageReference Include="OpenAI" Version="2.0.0" />
     <PackageReference Include="payOS" Version="1.0.7" />

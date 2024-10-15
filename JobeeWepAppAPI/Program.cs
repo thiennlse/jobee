@@ -1,4 +1,4 @@
-using BusinessObject.Models;
+﻿using BusinessObject.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -15,6 +15,9 @@ IConfiguration configuration = new ConfigurationBuilder().AddJsonFile("appsettin
 PayOS payOS = new PayOS(configuration["Environment:PAYOS_CLIENT_ID"] ?? throw new Exception("Cannot find environment"),
                     configuration["Environment:PAYOS_API_KEY"] ?? throw new Exception("Cannot find environment"),
                     configuration["Environment:PAYOS_CHECKSUM_KEY"] ?? throw new Exception("Cannot find environment"));
+#endregion
+#region GenerativeAI
+var generativeApiKey = configuration["GenerativeAI:ApiKey"] ?? throw new Exception("Cannot find Generative AI API Key");
 #endregion
 var builder = WebApplication.CreateBuilder(args);
 
@@ -82,8 +85,14 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "JobeeAPI", Version = "v1" });
+});
 
 builder.Services.AddSingleton(payOS);
+builder.Services.AddSingleton(generativeApiKey);
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 builder.Services.AddDbContext<DBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -102,11 +111,13 @@ builder.Services.AddScoped<IChatGpt, ChatGptService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+    c.RoutePrefix = "swagger"; // Đặt đường dẫn cho Swagger UI
+});
+app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAuthorization();
 app.UseAuthentication();
