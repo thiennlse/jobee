@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace BusinessObject.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class InitialCreated : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -52,7 +52,7 @@ namespace BusinessObject.Migrations
                     PasswordHash = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false, defaultValueSql: "(getdate())"),
                     Address = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true),
-                    Age = table.Column<int>(type: "int", nullable: true),
+                    Dob = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
                     FullName = table.Column<string>(type: "varchar(255)", unicode: false, maxLength: 255, nullable: true),
                     JobTitle = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: true),

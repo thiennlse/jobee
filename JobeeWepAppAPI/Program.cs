@@ -1,4 +1,4 @@
-﻿ using BusinessObject.Models;
+﻿using BusinessObject.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -6,16 +6,13 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Net.payOS;
 using Repository;
-using Services.UnitOfWork;
 using System.Text;
 using Services;
+using Services.Inteface;
+using Repository.Interface;
+using Microsoft.AspNetCore.Identity;
 
 IConfiguration configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-#region PayOS
-PayOS payOS = new PayOS(configuration["Environment:PAYOS_CLIENT_ID"] ?? throw new Exception("Cannot find environment"),
-                    configuration["Environment:PAYOS_API_KEY"] ?? throw new Exception("Cannot find environment"),
-                    configuration["Environment:PAYOS_CHECKSUM_KEY"] ?? throw new Exception("Cannot find environment"));
-#endregion
 #region GenerativeAI
 var generativeApiKey = configuration["GenerativeAI:ApiKey"] ?? throw new Exception("Cannot find Generative AI API Key");
 #endregion
@@ -90,10 +87,22 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "JobeeAPI", Version = "v1" });
 });
+#region PayOs
+builder.Services.AddSingleton<PayOS>(provider =>
+{
+    var configuration = provider.GetRequiredService<IConfiguration>();
 
-builder.Services.AddSingleton(payOS);
+    return new PayOS
+    (
+        configuration["Environment:PAYOS_CLIENT_ID"] ?? throw new Exception("Cannot find environment"),
+        configuration["Environment:PAYOS_API_KEY"] ?? throw new Exception("Cannot find environment"),
+        configuration["Environment:PAYOS_CHECKSUM_KEY"] ?? throw new Exception("Cannot find environment")
+    );
+});
+#endregion
 builder.Services.AddSingleton(generativeApiKey);
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddDbContext<DBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnectionString")));
 builder.Services.AddCors(options =>
@@ -106,8 +115,19 @@ builder.Services.AddCors(options =>
                   .AllowAnyMethod();
         });
 });
-builder.Services.AddScoped<UnitOfWork>();
+#region AddScope
+builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+builder.Services.AddScoped<IApplicationService, ApplicationService>();
+builder.Services.AddScoped<IApplicationRepository, ApplicationRepository>();
+builder.Services.AddScoped<IJobService, JobService>();
+builder.Services.AddScoped<IJobRepository, JobRepository>();
+builder.Services.AddScoped<ISubcriptionPlanService, SubcriptionPlanService>();
+builder.Services.AddScoped<ISubscriptionPlanRepository, SubcriptionPlanRepository>();
+builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IChatGpt, ChatGptService>();
+#endregion
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

@@ -1,89 +1,132 @@
 ﻿using BusinessObject.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Services.UnitOfWork;
+using Services.Inteface;
+using BusinessObject.ResponseModel;
+using BusinessObject.RequestModel;
 
 namespace JobeeWepAppAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/subcription-plan")]
     [ApiController]
     public class SubscriptionPlanController : ControllerBase
     {
-        private readonly UnitOfWork _unitOfWork;
+        private readonly ISubcriptionPlanService _subcriptionPlanService;
 
-        public SubscriptionPlanController(UnitOfWork unitOfWork)
+        public SubscriptionPlanController(ISubcriptionPlanService subcriptionPlanService)
         {
-            _unitOfWork = unitOfWork;
+            _subcriptionPlanService = subcriptionPlanService;
         }
 
-        [HttpGet("plans")]
+        [HttpGet]
         public async Task<IActionResult> GetAllPlan()
         {
-            var plans = await _unitOfWork.SubcriptionPlanRepository.getAll();
-            if (plans == null || !plans.Any())
+            try
             {
-                return NotFound("Không tìm thấy bản ghi nào của Subscription Plan");
+                var plans = await _subcriptionPlanService.GetAll();
+                return Ok(new BaseResponse<SubscriptionPlan> 
+                {
+                    IsSuccess = true,
+                    Results = plans,
+                    Message = "Successful"
+                });
             }
-            return Ok(plans);
+            catch (Exception ex)
+            {
+                return BadRequest(new BaseResponse<object>
+                {
+                    IsSuccess = false,
+                    Message = ex.Message
+                });
+            }
         }
 
-        [HttpGet("plan/{id}")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetPlanById(int id)
         {
-            if (id == 0)
+            try
             {
-                return BadRequest("Vui lòng nhập id");
+                var plan = await _subcriptionPlanService.GetById(id);
+                return Ok(new BaseResponse<SubscriptionPlan>
+                {
+                    IsSuccess = true,
+                    Result = plan,
+                    Message = "Successful"
+                });
             }
-
-            var plan = await _unitOfWork.SubcriptionPlanRepository.getById(id);
-            if (plan == null)
+            catch (Exception ex)
             {
-                return NotFound($"Không tìm thấy Subscription Plan với ID {id}");
+                return BadRequest(new BaseResponse<object>
+                {
+                    IsSuccess = false,
+                    Message = ex.Message
+                });
             }
-            return Ok(plan);
         }
 
-        [HttpPost("create")]
-        public async Task<IActionResult> AddPlan([FromBody] SubscriptionPlan plan)
+        [HttpPost]
+        public async Task<IActionResult> AddPlan([FromBody] SubcriptionPlanRequest plan)
         {
-            if (plan == null)
+            try
             {
-                return BadRequest("Vui lòng nhập đầy đủ thông tin");
+                await _subcriptionPlanService.Add(plan);
+                return Ok(new BaseResponse<object>
+                {
+                    IsSuccess = true,
+                    Message = "Created Succesfully"
+                });
             }
-
-            await _unitOfWork.SubcriptionPlanRepository.add(plan);
-            return Ok(plan);
+            catch (Exception ex)
+            {
+                return BadRequest(new BaseResponse<object>
+                {
+                    IsSuccess = false,
+                    Message = ex.Message
+                });
+            }
         }
 
-        [HttpPatch("update")]
-        public async Task<IActionResult> UpdatePlan([FromBody] SubscriptionPlan plan)
+        [HttpPatch("update/{id}")]
+        public async Task<IActionResult> UpdatePlan([FromBody] SubcriptionPlanRequest plan, int id)
         {
-            var existingPlan = await _unitOfWork.SubcriptionPlanRepository.getById(plan.PlanId);
-            if (existingPlan == null)
+            try
             {
-                return NotFound($"Không tìm thấy Subscription Plan với ID {plan.PlanId}");
+                await _subcriptionPlanService.Update(id, plan);
+                return Ok(new BaseResponse<object>
+                {
+                    IsSuccess = true,
+                    Message = "Updated Successful"
+                });
             }
-
-            await _unitOfWork.SubcriptionPlanRepository.update(existingPlan);
-            return Ok(plan);
+            catch (Exception ex)
+            {
+                return BadRequest(new BaseResponse<object>
+                {
+                    IsSuccess = false,
+                    Message = ex.Message
+                });
+            }
         }
 
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeletePlan(int id)
         {
-            if (id == 0)
+            try
             {
-                return BadRequest("Vui lòng nhập id");
+                await _subcriptionPlanService.Delete(id);
+                return Ok(new BaseResponse<object>
+                {
+                    IsSuccess = true,
+                    Message = "Deleted Successful"
+                });
             }
-
-            var plan = await _unitOfWork.SubcriptionPlanRepository.getById(id);
-            if (plan == null)
+            catch (Exception ex)
             {
-                return NotFound($"Không tìm thấy Subscription Plan với ID {id}");
+                return BadRequest(new BaseResponse<object>
+                {
+                    IsSuccess = false,
+                    Message = ex.Message
+                });
             }
-
-            await _unitOfWork.SubcriptionPlanRepository.deleteById(id);
-            return Ok($"Đã xóa Subscription Plan với ID {id}");
         }
     }
 }

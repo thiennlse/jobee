@@ -29,7 +29,7 @@ namespace BusinessObject.Models
         {
             IConfiguration configuration = new ConfigurationBuilder()
                     .SetBasePath(Directory.GetCurrentDirectory())
-                    .AddJsonFile("appsettings.json", true, true).Build();
+                    .AddJsonFile("appsettings.json").Build();
             return configuration["ConnectionStrings:DefaultConnectionString"];
         }
 

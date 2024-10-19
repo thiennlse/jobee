@@ -1,13 +1,13 @@
 ﻿using BusinessObject.Models;
 using Microsoft.AspNetCore.Mvc;
 using BusinessObject.RequestModel;
-using Services.UnitOfWork;
 using BusinessObject.ResponseModel;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using Services;
 using PdfSharp.Pdf.IO;
+using Services.Inteface;
 
 namespace JobeeWepAppAPI.Controllers
 {
@@ -15,15 +15,15 @@ namespace JobeeWepAppAPI.Controllers
     [Route("api/Account")]
     public class AccountController : Controller
     {
-        private readonly UnitOfWork _unitOfWork;
+        private readonly IAccountService _accountService;
         private IConfiguration _config;
         private readonly IChatGpt _openAIService;
         private PdfReader _pdfReader;
-        public AccountController(UnitOfWork unitOfWork, IConfiguration config, IChatGpt openAIService)
+        public AccountController(IConfiguration config, IChatGpt openAIService, IAccountService accountService)
         {
-            _unitOfWork = unitOfWork;
             _config = config;
             _openAIService = openAIService;
+            _accountService = accountService;
         }
 
         [HttpPost("grade")]
@@ -39,7 +39,7 @@ namespace JobeeWepAppAPI.Controllers
                 var result = await _openAIService.GradeCV(extractedText);
                 return Ok(result);
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 return BadRequest($"{ex.Message}");
             }
@@ -48,81 +48,97 @@ namespace JobeeWepAppAPI.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] RegisterAccountModel model)
         {
-            if (model == null || string.IsNullOrEmpty(model.Email) || string.IsNullOrEmpty(model.PasswordHash))
+            try
             {
-                return BadRequest("Email và mật khẩu không được để trống");
-            }
-            var result = await _unitOfWork.AccountRepo.Login(model.Email, model.PasswordHash);
-            if (result != null)
-            {
-                var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
-                var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
-                var Sectoken = new JwtSecurityToken(_config["Jwt:Issuer"],
-                  _config["Jwt:Issuer"],
-                  null,
-                  expires: DateTime.Now.AddMinutes(120),
-                  signingCredentials: credentials);
-
-                var token = new JwtSecurityTokenHandler().WriteToken(Sectoken);
-                AccountResponse response = new AccountResponse
+                var account = await _accountService.Login(model.Email, model.PasswordHash);
+                if (account == null)
+                {
+                    return Unauthorized("Email hoặc mật khẩu không đúng");
+                }
+                return Ok(new AccountResponse
                 {
                     IsSuccess = true,
-                    JwtToken = token,
-                    Role = result.Role,
-                    UserId = result.UserId
-                };
-
-                return Ok(response);
+                    JwtToken = account.JwtToken,
+                    Role = account.Role,
+                    UserId = account.UserId,
+                });
             }
-            else
+            catch (Exception ex)
             {
-                return Unauthorized("Email hoặc mật khẩu không đúng");
+                return BadRequest(new BaseResponse<object>
+                {
+                    IsSuccess = true,
+                    Result = ex.Message,
+                });
             }
-        }
-
-        [HttpGet("users")]
-        public async Task<IActionResult> GetUsers()
-        {
-            var user = await _unitOfWork.AccountRepo.getAll();
-            if (user == null)
-            {
-                return BadRequest(user);
-            }
-            return Ok(user);
-        }
-
-        [HttpPost("signin")]
-        public async Task<IActionResult> SignIn([FromBody] RegisterAccountModel user)
-        {
-            if (user != null)
-            {
-                User _user = new User();
-                _user.Email = user.Email;
-                _user.PasswordHash = user.PasswordHash;
-                _user.Role = "JobSeeker";
-                await _unitOfWork.AccountRepo.add(_user);
-                return Created("Da tao thanh cong", _user);
-            }
-            return BadRequest("Vui lòng nhập đầy đủ thông tin");
         }
 
         [HttpGet("user")]
+        public async Task<IActionResult> GetAll()
+        {
+            try
+            {
+                var result = await _accountService.GetAll();
+                return Ok(new BaseResponse<User>
+                {
+                    IsSuccess = true,
+                    Results = result,
+                    Message = "Successful"
+                });
+            }
+            catch (Exception ex) 
+            {
+                return BadRequest(new BaseResponse<object>
+                {
+                    IsSuccess = false,
+                    Result = ex.Message,
+                });
+            }
+        }
+        [HttpPost("signin")]
+        public async Task<IActionResult> SignIn([FromBody] RegisterAccountModel user)
+        {
+            try
+            {
+                await _accountService.Register(user);
+                return Ok(new BaseResponse<object>
+                {
+                    IsSuccess = true,
+                    Message = "Sign in successful"
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new BaseResponse<object>
+                {
+                    IsSuccess = false,
+                    Result = ex.Message,
+                });
+            }
+        }
+
+        [HttpGet("{id}")]
         public async Task<IActionResult> FindUserById(int id)
         {
-            if (id <= 0)
+            try
             {
-                return BadRequest("Vui lòng nhập id người dùng hợp lệ");
+                var user = await _accountService.GetById(id);
+                return Ok(new BaseResponse<User>
+                {
+                    IsSuccess = true,
+                    Result = user,
+                    Message = "Successful"
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new BaseResponse<object>
+                {
+                    IsSuccess = false,
+                    Result = ex.Message,
+                });
             }
 
-
-            var user = await _unitOfWork.AccountRepo.getById(id);
-            if (user == null)
-            {
-                return NotFound("Người dùng không tồn tại");
-            }
-
-            return Ok(user);
         }
     }
 }

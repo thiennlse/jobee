@@ -1,15 +1,13 @@
-﻿using BusinessObject.Models;
+﻿using Net.payOS.Types;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Net.payOS.Types;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 
-namespace Repository.Interface
+namespace Services.Inteface
 {
-    public interface IPayment : IBaseRepository<Payment>
+    public interface IPaymentService
     {
         Task<CreatePaymentResult> createPaymentLink(PaymentData paymentData);
 

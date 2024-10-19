@@ -1,104 +1,131 @@
 ﻿using BusinessObject.Models;
 using BusinessObject.RequestModel;
+using BusinessObject.ResponseModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services;
-using Services.UnitOfWork;
+using Services.Inteface;
 
 namespace JobeeWepAppAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/applications")]
     [ApiController]
     public class ApplicationController : ControllerBase
     {
-        private readonly UnitOfWork _unitOfWork;
+        private readonly IApplicationService _applicationService;
 
-        public ApplicationController(UnitOfWork unitOfWork)
+        public ApplicationController(IApplicationService applicationService)
         {
-            _unitOfWork = unitOfWork;
+            _applicationService = applicationService;
         }
 
-        [HttpGet("applications")]
+        [HttpGet]
         public async Task<IActionResult> GetApplication()
         {
-            var applications = await _unitOfWork.ApplicationRepo.getAll();
-
-            if (applications == null)
+            try
             {
-                return NotFound("Không tìm thấy bản ghi nào của Application");
+                var app = await _applicationService.GetAll();
+                return Ok(new BaseResponse<Application>
+                {
+                    IsSuccess = true,
+                    Results = app,
+                    Message = "Successful"
+                });
             }
-            return Ok(applications);
+            catch (Exception ex)
+            {
+                return BadRequest(new BaseResponse<object>
+                {
+                    IsSuccess = false,
+                    Message = ex.Message
+                });
+            }
         }
 
-        [HttpGet("application/{id}")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetApplicationById(int id)
         {
-            if (id == 0)
+            try
             {
-                return BadRequest("Vui lòng nhập id");
+                var app = await _applicationService.GetById(id);
+                return Ok(new BaseResponse<Application>
+                {
+                    IsSuccess = true,
+                    Result = app,
+                    Message = "Successful"
+                });
             }
-            var application = await _unitOfWork.ApplicationRepo.getById(id);
-
-            if (application == null)
+            catch (Exception ex)
             {
-                return NotFound($"Không tìm thấy Application {id}");
+                return BadRequest(new BaseResponse<object>
+                {
+                    IsSuccess = false,
+                    Message = ex.Message
+                });
             }
-            return Ok(application);
         }
-        [HttpPost("create")]
+        [HttpPost]
         public async Task<IActionResult> createApplication([FromBody] ApplicationRequest application)
         {
-            Application _application = new Application();
-            _application.AppliedAt = application.AppliedAt;
-            _application.ApplicationId = application.ApplicationId;
-            _application.Status = application.Status;
-            _application.JobSeeker = await _unitOfWork.AccountRepo.getById(application.JobSeekerId);
-            _application.Resume = application.Resume;
-            _application.JobId = application.JobId;
-
-            if (await _unitOfWork.AccountRepo.getById(application.JobSeekerId) == _application.JobSeeker)
+            try
             {
-                return NotFound($"Không tìm thấy {application.JobSeekerId}");
+                await _applicationService.Add(application);
+                return Ok(new BaseResponse<object>
+                {
+                    IsSuccess = true,
+                    Message = "Successful"
+                });
             }
-            if (application == null)
+            catch (Exception ex)
             {
-                return BadRequest("Vui lòng nhập đầy đủ thông tin");
+                return BadRequest(new BaseResponse<object>
+                {
+                    IsSuccess = false,
+                    Message = ex.Message
+                });
             }
-            await _unitOfWork.ApplicationRepo.add(_application);
-            return Ok(_application);
         }
-        [HttpPatch("update")]
-        public async Task<IActionResult> updateApplication([FromBody] Application app)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> updateApplication([FromBody] ApplicationRequest app, int id)
         {
-            var _application = await _unitOfWork.ApplicationRepo.getById(app.ApplicationId);
-            if (app == null)
+            try
             {
-                return BadRequest("Vui lòng nhập đầy đủ thông tin");
+                await _applicationService.Update(id, app);
+                return Ok(new BaseResponse<object>
+                {
+                    IsSuccess = true,
+                    Message = "Successful"
+                });
             }
-
-            if (_application != null)
+            catch (Exception ex)
             {
-                await _unitOfWork.ApplicationRepo.update(_application);
-                return Ok(app);
+                return BadRequest(new BaseResponse<object>
+                {
+                    IsSuccess = false,
+                    Message = ex.Message
+                });
             }
-            return NotFound($"Không tìm thấy Application{app.ApplicationId}");
         }
-        [HttpDelete("delete")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> deleteApplication([FromBody] int id)
         {
-            if (id == 0)
+            try
             {
-                return BadRequest("Vui lòng nhập id");
+                _applicationService.Delete(id);
+                return Ok(new BaseResponse<object>
+                {
+                    IsSuccess = true,
+                    Message = "Successful"
+                });
             }
-            var _application = await _unitOfWork.ApplicationRepo.getById(id);
-
-            if (_application == null)
+            catch (Exception ex)
             {
-                return NotFound($"Không tìm thấy Application {id}");
+                return BadRequest(new BaseResponse<object>
+                {
+                    IsSuccess = false,
+                    Message = ex.Message
+                });
             }
-
-            await _unitOfWork.ApplicationRepo.deleteById(id);
-            return Ok($"Đã xóa bản ghi {id}");
         }
 
     }

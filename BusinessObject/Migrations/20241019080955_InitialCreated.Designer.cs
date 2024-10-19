@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BusinessObject.Migrations
 {
     [DbContext(typeof(DBContext))]
-    [Migration("20240926144202_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20241019080955_InitialCreated")]
+    partial class InitialCreated
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -251,9 +251,6 @@ namespace BusinessObject.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(255)");
 
-                    b.Property<int?>("Age")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
@@ -262,6 +259,9 @@ namespace BusinessObject.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("Dob")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -269,13 +269,11 @@ namespace BusinessObject.Migrations
                         .HasColumnType("varchar(255)");
 
                     b.Property<string>("FullName")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .IsUnicode(false)
                         .HasColumnType("varchar(255)");
 
                     b.Property<string>("JobTitle")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .IsUnicode(false)
                         .HasColumnType("varchar(100)");

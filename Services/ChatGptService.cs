@@ -21,7 +21,7 @@ public class ChatGptService : IChatGpt
 
     public async Task<string> GradeCV(string cvContent)
     {
-        var prompt = $"Hãy đánh giá về nội dung CV này và đưa ra ý kiến: {cvContent}";
+        var prompt = $"Hãy đánh giá về nội dung CV này và đưa ra ý kiến: {cvContent}, trả về theo thẻ html, không trả về <!DOCTYPE html> và <html> , no yapping";
         var model = new GenerativeModel();
         model.ApiKey = _generativeApiKey;
         var response = await model.GenerateContent(prompt); // Sử dụng model với prompt

@@ -2,7 +2,8 @@
 using BusinessObject.RequestModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Services.UnitOfWork;
+using Services.Inteface;
+using BusinessObject.ResponseModel;
 
 namespace JobeeWepAppAPI.Controllers
 {
@@ -10,86 +11,123 @@ namespace JobeeWepAppAPI.Controllers
     [ApiController]
     public class JobController : ControllerBase
     {
-        private readonly UnitOfWork _unitOfWork;
+        private readonly IJobService _jobService;
 
-        public JobController(UnitOfWork unitOfWork)
+        public JobController(IJobService jobService)
         {
-            _unitOfWork = unitOfWork;
+            _jobService = jobService;
         }
 
         [HttpGet("jobs")]
         public async Task<IActionResult> GetAllJob()
         {
-            var jobs = await _unitOfWork.JobRepo.getAll();
-            if (jobs == null || !jobs.Any())
+            try
             {
-                return NotFound("Không tìm thấy bản ghi nào của Job");
+                var jobs = await _jobService.GetAll();
+                return Ok(new BaseResponse<Job>
+                {
+                    IsSuccess = true,
+                    Results = jobs,
+                    Message = "Successful"
+                });
             }
-            return Ok(jobs);
+            catch (Exception ex)
+            {
+                return BadRequest(new BaseResponse<object>
+                {
+                    IsSuccess = false,
+                    Message = ex.Message
+                });
+            }
         }
 
         [HttpGet("job/{id}")]
         public async Task<IActionResult> GetJobById(int id)
         {
-            if (id == 0)
+            try
             {
-                return BadRequest("Vui lòng nhập id");
+                var job = await _jobService.GetById(id);
+                return Ok(new BaseResponse<Job>
+                {
+                    IsSuccess = true,
+                    Result = job,
+                    Message = "Successful"
+                });
             }
-
-            var job = await _unitOfWork.JobRepo.getById(id);
-            if (job == null)
+            catch (Exception ex)
             {
-                return NotFound($"Không tìm thấy Job với ID {id}");
+                return BadRequest(new BaseResponse<object>
+                {
+                    IsSuccess = false,
+                    Message = ex.Message
+                });
             }
-            return Ok(job);
         }
 
-        [HttpPost("create")]
-        public async Task<IActionResult> AddJob([FromBody] Job job)
+        [HttpPost]
+        public async Task<IActionResult> AddJob([FromBody] JobRequest job)
         {
-            Job _job = new Job();
-            _job.Employer = await _unitOfWork.AccountRepo.getById(job.EmployerId);
-            _job.EmployerId = job.EmployerId;
-            _job.Title = job.Title;
-            _job.Description = job.Description;
-            _job.JobType = job.JobType;
-            _job.Status = job.Status;
-            _job.Location = job.Location;
-            _job.CreateAt = DateTime.Now;
-            _job.SalaryRange = job.SalaryRange;
-            await _unitOfWork.JobRepo.add(_job);
-            return Ok(_job);
+            try
+            {
+                await _jobService.Create(job);
+                return Ok(new BaseResponse<object>
+                {
+                    IsSuccess = true,
+                    Message = "Created successfully"
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new BaseResponse<object>
+                {
+                    IsSuccess = false,
+                    Message = ex.Message
+                });
+            }
         }
 
-        [HttpPatch("update")]
-        public async Task<IActionResult> UpdateJob([FromBody] Job job)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateJob([FromBody] JobRequest job, int id)
         {
-            var existingJob = await _unitOfWork.JobRepo.getById(job.JobId);
-            if (existingJob == null)
+            try
             {
-                return NotFound($"Không tìm thấy Job với ID {job.JobId}");
+                await _jobService.Update(id, job);
+                return Ok(new BaseResponse<object>
+                {
+                    IsSuccess = true,
+                    Message = "Update Successful"
+                });
             }
-
-            await _unitOfWork.JobRepo.update(existingJob);
-            return Ok(job);
+            catch (Exception ex)
+            {
+                return BadRequest(new BaseResponse<object>
+                {
+                    IsSuccess = false,
+                    Message = ex.Message
+                });
+            }
         }
 
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteJob(int id)
         {
-            if (id == 0)
+            try
             {
-                return BadRequest("Vui lòng nhập id");
+                await _jobService.Delete(id);
+                return Ok(new BaseResponse<object>
+                {
+                    IsSuccess = true,
+                    Message = "Deleted Successful"
+                });
             }
-
-            var job = await _unitOfWork.JobRepo.getById(id);
-            if (job == null)
+            catch (Exception ex)
             {
-                return NotFound($"Không tìm thấy Job với ID {id}");
+                return BadRequest(new BaseResponse<object>
+                {
+                    IsSuccess = false,
+                    Message = ex.Message
+                });
             }
-
-            await _unitOfWork.JobRepo.deleteById(id);
-            return Ok($"Đã xóa Job với ID {id}");
         }
     }
 }

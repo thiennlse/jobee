@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Repository
 {
-    public class PaymentRepository : BaseRepository<Payment>, IPayment
+    public class PaymentRepository : BaseRepository<Payment>, IPaymentRepository
     {
         private readonly BaseRepository<Payment> _basesRepository;
         private readonly DBContext _dbContext;
