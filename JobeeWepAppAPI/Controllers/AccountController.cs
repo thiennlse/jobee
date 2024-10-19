@@ -159,7 +159,7 @@ namespace JobeeWepAppAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUser(int id , ProfileRequest profile)
+        public async Task<IActionResult> UpdateUser(int id ,[FromBody] ProfileRequest profile)
         {
             try
             {
@@ -177,6 +177,25 @@ namespace JobeeWepAppAPI.Controllers
                     IsSuccess = false,
                     Result = ex.Message,
                 });
+            }
+        }
+
+        [HttpPost("interview-with-ai")]
+        public async Task<IActionResult> AskQuestion(IFormFile pdfFile)
+        {
+            try
+            {
+                if (pdfFile == null || pdfFile.Length == 0)
+                {
+                    return BadRequest("A PDF file is required.");
+                }
+                string extractedText = await _openAIService.PDFToString(pdfFile);
+                var result = await _openAIService.AskQuestion(extractedText);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"{ex.Message}");
             }
         }
     }

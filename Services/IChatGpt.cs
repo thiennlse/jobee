@@ -2,10 +2,12 @@
 
 namespace Services;
 
-    public interface IChatGpt
-    {
-        Task<string> GradeCV(string cvContent);
+public interface IChatGpt
+{
+    Task<string> GradeCV(string cvContent);
 
-        Task<string> PDFToString(IFormFile file);
-    }
+    Task<string> PDFToString(IFormFile file);
+
+    Task<string> AskQuestion(string cvContent);
+}
 

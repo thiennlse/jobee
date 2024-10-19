@@ -19,6 +19,16 @@ public class ChatGptService : IChatGpt
         _generativeApiKey = _configuration["GenerativeAI:ApiKey"] ?? throw new Exception("Cannot find Generative AI API Key"); // Lấy API Key từ cấu hình
     }
 
+    public async Task<string> AskQuestion(string cvContent)
+    {
+        var prompt = $"Hãy đặt 5 câu hỏi ít nhất có 2 câu liên quan đến công việc và kinh nghiệm, có 2 câu về kiến thức chuyên sâu ở trong CV này:{cvContent}, trả về theo thẻ html, không trả về <!DOCTYPE html> và <html> , no yapping";
+        var model = new GenerativeModel();
+        model.ApiKey = _generativeApiKey;
+        var response = await model.GenerateContent(prompt);
+
+        return response.ToString();
+    }
+
     public async Task<string> GradeCV(string cvContent)
     {
         var prompt = $"Hãy đánh giá về nội dung CV này và đưa ra ý kiến: {cvContent}, trả về theo thẻ html, không trả về <!DOCTYPE html> và <html> , no yapping";
