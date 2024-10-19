@@ -16,7 +16,7 @@ namespace JobeeWepAppAPI.Controllers
     public class AccountController : Controller
     {
         private readonly IAccountService _accountService;
-        private IConfiguration _config;
+        private readonly IConfiguration _config;
         private readonly IChatGpt _openAIService;
         private PdfReader _pdfReader;
         public AccountController(IConfiguration config, IChatGpt openAIService, IAccountService accountService)
@@ -138,7 +138,46 @@ namespace JobeeWepAppAPI.Controllers
                     Result = ex.Message,
                 });
             }
+        }
 
+        [HttpPost("upload-image")]
+        public async Task<IActionResult> UploadFile(IFormFile file)
+        {
+            try
+            {
+                var imageURL = await _accountService.SaveImage(file);
+                return Ok(new { Url = imageURL });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new BaseResponse<object>
+                {
+                    IsSuccess = false,
+                    Result = ex.Message,
+                });
+            }
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateUser(int id , ProfileRequest profile)
+        {
+            try
+            {
+                await _accountService.Update(id, profile);
+                return Ok(new BaseResponse<object>
+                {
+                    IsSuccess = true,
+                    Message = "Updated Successful"
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new BaseResponse<object>
+                {
+                    IsSuccess = false,
+                    Result = ex.Message,
+                });
+            }
         }
     }
 }

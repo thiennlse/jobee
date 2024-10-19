@@ -1,6 +1,7 @@
 ﻿using BusinessObject.Models;
 using BusinessObject.RequestModel;
 using BusinessObject.ResponseModel;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,5 +18,6 @@ namespace Services.Inteface
         Task Register(RegisterAccountModel model);
         Task Update(int id, ProfileRequest profile);
         Task Delete(int id);
+        Task<String> SaveImage(IFormFile file);
     }
 }

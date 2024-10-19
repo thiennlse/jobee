@@ -111,7 +111,7 @@ namespace JobeeWepAppAPI.Controllers
         {
             try
             {
-                _applicationService.Delete(id);
+                await _applicationService.Delete(id);
                 return Ok(new BaseResponse<object>
                 {
                     IsSuccess = true,

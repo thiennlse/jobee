@@ -8,7 +8,6 @@ namespace BusinessObject.RequestModel
 {
     public class ProfileRequest
     {
-        public DateTime CreatedAt { get; set; }
         public string? Address { get; set; }
         public DateTime Dob { get; set; }
         public string? Description { get; set; }

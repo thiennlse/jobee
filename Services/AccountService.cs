@@ -2,9 +2,12 @@
 using BusinessObject.Models;
 using BusinessObject.RequestModel;
 using BusinessObject.ResponseModel;
+using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Repository;
 using Repository.Handler;
@@ -20,12 +23,20 @@ namespace Services
         private readonly IAccountRepository _accountRepository;
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly IConfiguration _config;
-        private readonly RoleManager<IdentityRole> _roleManager;
-        public AccountService(IAccountRepository accountRepository, IHttpContextAccessor contextAccessor, IConfiguration config)
+        private readonly Cloudinary _cloudinary;
+        public AccountService(IAccountRepository accountRepository, IHttpContextAccessor contextAccessor, IConfiguration config, IOptions<CloudinarySetting> cloudconfig)
         {
             _accountRepository = accountRepository;
             _contextAccessor = contextAccessor;
             _config = config;
+            var acc = new Account
+            {
+                Cloud = cloudconfig.Value.CloudName,
+                ApiKey = cloudconfig.Value.ApiKey,
+                ApiSecret = cloudconfig.Value.ApiSecret
+            };
+
+            _cloudinary = new Cloudinary(acc);
         }
 
         public async Task Delete(int id)
@@ -90,6 +101,23 @@ namespace Services
             await _accountRepository.add(user);
         }
 
+        public async Task<string> SaveImage(IFormFile file)
+        {
+            var uploadResult = new ImageUploadResult();
+            if (file.Length > 0)
+            {
+                using var stream = file.OpenReadStream();
+                var uploadParams = new ImageUploadParams
+                {
+                    File = new FileDescription(file.FileName, stream),
+                    Transformation = new Transformation().Height(300).Width(200)
+                };
+                uploadResult = await _cloudinary.UploadAsync(uploadParams);
+
+            }
+            return uploadResult.SecureUrl.ToString();
+        }
+
         public async Task Update(int id, ProfileRequest profile)
         {
             User user = await _accountRepository.getById(id);
@@ -103,6 +131,7 @@ namespace Services
 
             await _accountRepository.update(user);
         }
+
 
 
     }

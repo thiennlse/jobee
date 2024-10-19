@@ -51,6 +51,22 @@ builder.Services.Configure<JwtBearerOptions>(options =>
     };
 });
 #endregion
+#region Cloudinary
+builder.Services.Configure<CloudinarySetting>(builder.Configuration.GetSection("CloudinarySetting"));
+#endregion
+#region PayOs
+builder.Services.AddSingleton<PayOS>(provider =>
+{
+    var configuration = provider.GetRequiredService<IConfiguration>();
+
+    return new PayOS
+    (
+        configuration["Environment:PAYOS_CLIENT_ID"] ?? throw new Exception("Cannot find environment"),
+        configuration["Environment:PAYOS_API_KEY"] ?? throw new Exception("Cannot find environment"),
+        configuration["Environment:PAYOS_CHECKSUM_KEY"] ?? throw new Exception("Cannot find environment")
+    );
+});
+#endregion
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -87,19 +103,7 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "JobeeAPI", Version = "v1" });
 });
-#region PayOs
-builder.Services.AddSingleton<PayOS>(provider =>
-{
-    var configuration = provider.GetRequiredService<IConfiguration>();
 
-    return new PayOS
-    (
-        configuration["Environment:PAYOS_CLIENT_ID"] ?? throw new Exception("Cannot find environment"),
-        configuration["Environment:PAYOS_API_KEY"] ?? throw new Exception("Cannot find environment"),
-        configuration["Environment:PAYOS_CHECKSUM_KEY"] ?? throw new Exception("Cannot find environment")
-    );
-});
-#endregion
 builder.Services.AddSingleton(generativeApiKey);
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 builder.Services.AddHttpContextAccessor();
