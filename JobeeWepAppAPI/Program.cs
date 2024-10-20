@@ -11,6 +11,8 @@ using Services;
 using Services.Inteface;
 using Repository.Interface;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 
 IConfiguration configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
 #region GenerativeAI
@@ -37,6 +39,20 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
          IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
      };
  });
+
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+})
+    .AddCookie()
+    .AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
+    {
+        options.ClientId = builder.Configuration.GetSection("Google:ClientId").Value;
+        options.ClientSecret = builder.Configuration.GetSection("Google:ClientSecret").Value;
+    });
+
 builder.Services.Configure<JwtBearerOptions>(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
@@ -109,16 +125,28 @@ builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddDbContext<DBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnectionString")));
+//builder.Services.AddCors(options =>
+//{
+//    options.AddDefaultPolicy(
+//        policy =>
+//        {
+//            policy.WithOrigins("http://localhost:5173", "https://solva-app.vercel.app")
+//                  .AllowAnyHeader()
+//                  .AllowAnyMethod();
+//        });
+//});
+
+
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(
-        policy =>
-        {
-            policy.WithOrigins("http://localhost:5173", "https://solva-app.vercel.app")
-                  .AllowAnyHeader()
-                  .AllowAnyMethod();
-        });
+    options.AddPolicy("AllowAllOrigins", builder =>
+    {
+        builder.AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader();
+    });
 });
+
 #region AddScope
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
@@ -145,6 +173,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAuthorization();
 app.UseAuthentication();
-app.UseCors();
+//app.UseCors();
+app.UseCors("AllowAllOrigins");
 app.MapControllers();
 app.Run();
