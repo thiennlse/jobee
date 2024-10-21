@@ -46,6 +46,7 @@ namespace Services
             plan .PlanName = _plan.PlanName;
             plan .Price = _plan.Price;
             plan.Duration = _plan.Duration;
+            await _repository.update(plan);
         }
     }
 }
