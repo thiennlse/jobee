@@ -8,6 +8,8 @@ using System.Text;
 using Services;
 using PdfSharp.Pdf.IO;
 using Services.Inteface;
+using Validaiton.User;
+using FluentValidation.Results;
 
 namespace JobeeWepAppAPI.Controllers
 {
@@ -18,12 +20,13 @@ namespace JobeeWepAppAPI.Controllers
         private readonly IAccountService _accountService;
         private readonly IConfiguration _config;
         private readonly IChatGpt _openAIService;
-        private PdfReader _pdfReader;
-        public AccountController(IConfiguration config, IChatGpt openAIService, IAccountService accountService)
+        private readonly AccountValidation _accountValidation;
+        public AccountController(IConfiguration config, IChatGpt openAIService, IAccountService accountService, AccountValidation accountValidation)
         {
             _config = config;
             _openAIService = openAIService;
             _accountService = accountService;
+            _accountValidation = accountValidation;
         }
 
         [HttpPost("grade")]
@@ -100,12 +103,18 @@ namespace JobeeWepAppAPI.Controllers
         {
             try
             {
-                await _accountService.Register(user);
-                return Ok(new BaseResponse<object>
+                ValidationResult validationResult = _accountValidation.Validate(user);
+                var error = validationResult.ToString();
+                if (validationResult.IsValid) 
                 {
-                    IsSuccess = true,
-                    Message = "Sign in successful"
-                });
+                    await _accountService.Register(user);
+                    return Ok(new BaseResponse<object>
+                    {
+                        IsSuccess = true,
+                        Message = "Sign in successful"
+                    });
+                }
+                return BadRequest(error);
             }
             catch (Exception ex)
             {

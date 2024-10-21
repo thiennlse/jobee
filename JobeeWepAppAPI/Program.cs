@@ -11,6 +11,7 @@ using Services;
 using Services.Inteface;
 using Repository.Interface;
 using Microsoft.AspNetCore.Identity;
+using Validaiton.User;
 
 IConfiguration configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
 #region GenerativeAI
@@ -131,6 +132,7 @@ builder.Services.AddScoped<ISubscriptionPlanRepository, SubcriptionPlanRepositor
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IChatGpt, ChatGptService>();
+builder.Services.AddScoped<AccountValidation>();
 #endregion
 var app = builder.Build();
 

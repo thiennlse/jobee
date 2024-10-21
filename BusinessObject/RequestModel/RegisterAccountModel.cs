@@ -9,10 +9,7 @@ namespace BusinessObject.RequestModel
 {
     public class RegisterAccountModel
     {
-        [Required]
-        [EmailAddress(ErrorMessage = "Vui lòng nhập đúng email")]
         public string Email { get; set; } = null!;
-        [Required]
         public string PasswordHash { get; set; } = null!;
     }
 }

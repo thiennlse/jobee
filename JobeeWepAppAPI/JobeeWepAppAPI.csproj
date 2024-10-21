@@ -30,6 +30,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Services\Services.csproj" />
+    <ProjectReference Include="..\Validaiton\Validaiton.csproj" />
   </ItemGroup>
 
 </Project>
