@@ -68,7 +68,6 @@ namespace Services
             job.Status = _job.Status;
             job.JobType = _job.JobType;
             job.SalaryRange = _job.SalaryRange;
-
             await _jobRepository.update(job);
         }
     }

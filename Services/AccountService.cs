@@ -67,8 +67,8 @@ namespace Services
 
             var claims = new[]
         {
-            new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()), // Thêm UserId vào claim
-            new Claim(ClaimTypes.Role, user.Role) // Thêm Role vào claim
+            new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+            new Claim(ClaimTypes.Role, user.Role)
         };
 
             var Sectoken = new JwtSecurityToken(
