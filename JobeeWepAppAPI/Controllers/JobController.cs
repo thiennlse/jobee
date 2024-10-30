@@ -7,7 +7,7 @@ using BusinessObject.ResponseModel;
 
 namespace JobeeWepAppAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/jobs")]
     [ApiController]
     public class JobController : ControllerBase
     {
@@ -18,7 +18,7 @@ namespace JobeeWepAppAPI.Controllers
             _jobService = jobService;
         }
 
-        [HttpGet("jobs")]
+        [HttpGet]
         public async Task<IActionResult> GetAllJob()
         {
             try
@@ -41,7 +41,30 @@ namespace JobeeWepAppAPI.Controllers
             }
         }
 
-        [HttpGet("job/{id}")]
+        [HttpGet("user/{id}")]
+        public async Task<IActionResult> GetJobByUserId(int id)
+        {
+            try
+            {
+                var jobs = await _jobService.GetByUserId(id);
+                return Ok(new BaseResponse<Job>
+                {
+                    IsSuccess = true,
+                    Results = jobs,
+                    Message = "Successful"
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new BaseResponse<object>
+                {
+                    IsSuccess = false,
+                    Message = ex.Message
+                });
+            }
+        }
+
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetJobById(int id)
         {
             try

@@ -42,6 +42,29 @@ namespace JobeeWepAppAPI.Controllers
             }
         }
 
+        [HttpGet("user/{id}")]
+        public async Task<IActionResult> GetApplicationByUserId(int id)
+        {
+            try
+            {
+                var app = await _applicationService.GetByUserId(id);
+                return Ok(new BaseResponse<Application>
+                {
+                    IsSuccess = true,
+                    Results = app,
+                    Message = "Successful"
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new BaseResponse<object>
+                {
+                    IsSuccess = false,
+                    Message = ex.Message
+                });
+            }
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetApplicationById(int id)
         {
@@ -64,6 +87,7 @@ namespace JobeeWepAppAPI.Controllers
                 });
             }
         }
+
         [HttpPost]
         public async Task<IActionResult> createApplication([FromBody] ApplicationRequest application)
         {
@@ -107,7 +131,7 @@ namespace JobeeWepAppAPI.Controllers
             }
         }
         [HttpDelete("{id}")]
-        public async Task<IActionResult> deleteApplication([FromBody] int id)
+        public async Task<IActionResult> deleteApplication(int id)
         {
             try
             {

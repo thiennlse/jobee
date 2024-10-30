@@ -59,6 +59,11 @@ namespace Services
             return await _jobRepository.getById(id);
         }
 
+        public async Task<List<Job>> GetByUserId(int id)
+        {
+            return await _jobRepository.GetByUserId(id);
+        }
+
         public async Task Update(int id, JobRequest _job)
         {
             Job job = await GetById(id);

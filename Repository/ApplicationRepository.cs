@@ -18,5 +18,10 @@ namespace Repository
         {
             _dbContext = dbContext;
         }
+
+        public async Task<List<Application>> GetByUserId(int id)
+        {
+            return await _dbContext.Applications.Where(a => a.JobSeekerId.Equals(id)).ToListAsync();
+        }
     }
 }

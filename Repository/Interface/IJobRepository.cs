@@ -9,6 +9,6 @@ namespace Repository
 {
     public interface IJobRepository : IBaseRepository<Job>
     {
-        
+        Task<List<Job>> GetByUserId(int id);
     }
 }

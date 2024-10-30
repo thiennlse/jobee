@@ -13,12 +13,15 @@ namespace Repository
     public class JobRepository : BaseRepository<Job>, IJobRepository
     {
         private readonly DBContext _dbContext;
-        private readonly BaseRepository<Job> _baseRepository;
 
         public JobRepository(DBContext dbContext) : base(dbContext)
         {
             _dbContext = dbContext;
-            _baseRepository = new BaseRepository<Job>(dbContext);
+        }
+
+        public async Task<List<Job>> GetByUserId(int id)
+        {
+            return await _dbContext.Jobs.Where(j => j.EmployerId.Equals(id)).ToListAsync();
         }
     }
 }

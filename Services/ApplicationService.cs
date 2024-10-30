@@ -46,9 +46,19 @@ namespace Services
             return await _repository.getById(id);
         }
 
+        public async Task<List<Application>> GetByUserId(int id)
+        {
+            return await _repository.GetByUserId(id);
+        }
+
         public async Task Update(int id, ApplicationRequest application)
         {
             Application _application = await _repository.getById(id);
+            _application.JobId = application.JobId;
+            _application.JobSeekerId = application.JobSeekerId;
+            _application.Resume = application.Resume;
+            _application.Status = application.Status;
+            await _repository.update(_application);
         }
     }
 }

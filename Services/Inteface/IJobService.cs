@@ -15,5 +15,6 @@ namespace Services.Inteface
         Task Create(JobRequest request);
         Task Update(int id, JobRequest _job);
         Task Delete(int id);
+        Task<List<Job>> GetByUserId(int id);
     }
 }

@@ -9,6 +9,6 @@ namespace Repository
 {
     public interface IApplicationRepository : IBaseRepository<Application>
     {
-        
+        Task<List<Application>> GetByUserId(int id);
     }
 }

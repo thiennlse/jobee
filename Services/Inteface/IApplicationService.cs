@@ -15,5 +15,6 @@ namespace Services.Inteface
         Task Add(ApplicationRequest application);
         Task Update(int id, ApplicationRequest application);
         Task Delete(int id);
+        Task<List<Application>> GetByUserId(int id);
     }
 }
